@@ -1,0 +1,38 @@
+{
+  "name": "npm_install",
+  "version": "1.0.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Johnson3176/IOT-npm.git"
+  },
+  "description": "IOT_npm_install_tools",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "A920906s"
+  ],
+  "author": "yu",
+  "license": "ISC",
+  "devDependencies": {
+    "vite": "^4.2.1"
+  },
+  "bugs": {
+    "url": "https://github.com/Johnson3176/IOT-npm/issues"
+  },
+  "homepage": "https://github.com/Johnson3176/IOT-npm#readme",
+  "dependencies": {
+    "@huaweicloud/huaweicloud-sdk-core": "^3.1.35",
+    "@huaweicloud/huaweicloud-sdk-iotda": "^3.1.35",
+    "@huaweicloud/huaweicloud-sdk-vpc": "^3.1.35",
+    "dat.gui": "^0.7.9",
+    "es6-promise": "^4.2.8",
+    "module": "^1.2.5",
+    "require.js": "^1.0.0",
+    "stats.js": "^0.17.0",
+    "three": "^0.151.3",
+    "three-js-csg": "^72.0.0"
+  }
+}
