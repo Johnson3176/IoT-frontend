@@ -328,17 +328,6 @@
 						scene.add(hollowCylinder2);
 					}
 
-					// function loadShader(fliename, onLoadShader) {  // 异步加载外部文件
-					// 	var request = new XMLHttpRequest();
-					// 	request.onreadystatechange = function () {
-					// 		if (request.readyState === 4 && request.status === 200) {
-					// 			onLoadShader(request.responseText);
-					// 		}
-					// 	};
-					// 	request.open("GET", fliename, true);
-					// 	request.send();
-					// }
-
 					function createBubble(x, y, z) {
 						var radiusSeg = 32;
 						var heightSeg = 1;
@@ -350,15 +339,6 @@
 						var vertices = [];
 						var tempPosition = new THREE.Vector3();
 
-
-						// loadShader('./glsl/vertexShader.glsl', function (vsContent) {
-						// 	vs = vsContent;
-						// });
-						// loadShader('./glsl/fragmentShader.glsl', function (fsContent) {
-						// 	fs = fsContent;
-						// });
-
-
 						for (let i = 0; i < 800; i++) {
 							sampler.sample(tempPosition);
 							vertices.push(tempPosition.x, tempPosition.y, tempPosition.z);
@@ -366,11 +346,6 @@
 						var pointsGemometry = new THREE.BufferGeometry();
 						pointsGemometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
 
-						// 直接创建微粒对象
-						// var pointsMaterial = new THREE.PointsMaterial({
-						// 	color:0xff61d5,
-						// 	size:0.03
-						// })
 
 						// 通过着色器渲染微粒对象
 
@@ -427,15 +402,6 @@
 						// group.add(points);
 						// group.position.y = 300;
 						// scene.add(group);
-					}
-
-					function createRefluxBump()
-					{
-						// 0x6aebf9
-						// #908E91
-						// createCubeWall(99,78,78,0,new THREE.MeshPhongMaterial({ color: 0x908e91 }),-440,39,-130);
-						// createCubeWall(99,78,78,0.5,new THREE.MeshPhongMaterial({ color: 0x908e91 }),-445,39,0);
-						// createCubeWall(99,78,78,0,new THREE.MeshPhongMaterial({ color: 0x908e91 }),-440,39,130);
 					}
 
 					function createFans(x1, y1, z1, x2, y2, z2) {
