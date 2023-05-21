@@ -9,11 +9,11 @@ var ref_x=0, ref_y = 0, ref_z = 0;
 
 
 /***** 定义墙体 *****/
-var lengthLeftWall = 800, lengthMiddleWall = 400, lengthRightWall = 150;
+var lengthLeftWall = 700, lengthMiddleWall = 400, lengthRightWall = 150;
 var heightWall = 600, widthWall = 400;
 var thicknessOuter = 10, thicknessInner = 5; 
-var heightDam = 450, distDam = 700;
-var distFan = 600, distBioReactor = 600, distPartWall = 500, distLeftMiddle = 100;
+var heightDam = 450, distDam = 600;
+var distFan = 500, distBioReactor = 500, distPartWall = 400, distLeftMiddle = 100;
 
 var stoneRadius = 9, stoneHeight = 50;
 
