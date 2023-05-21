@@ -10,9 +10,8 @@ app = Flask(__name__, static_url_path='/s',
             static_folder='static', template_folder='templates')
 token_jxy = ""
 token_lj = ""
+
 # 首先需要获取token，为获取设备信息提供身份验证
-
-
 @app.route('/')
 @cross_origin()
 def start():
@@ -124,18 +123,6 @@ def putData():
         BodyDict["services"] = servicesContent
         Body = json.dumps(BodyDict)
         print(Body)
-    # Body = {
-    #     "services": {
-    #         "LED0_STATE": 1,
-    #         "LED1_STATE": 1,
-    #         "LED2_STATE": 1,
-    #         "LED3_STATE": 0,
-    #         "LED4_STATE": 0,
-    #         "LED5_STATE": 0,
-    #         "LED6_STATE": 0,
-    #         "LED7_STATE": 1,
-    #     }
-    # }
     res = requests.put(url=url_lj, headers=Headers,
                         params=Params_lj, json=Body)  # 给华为云传数据
     return "数据发送成功"

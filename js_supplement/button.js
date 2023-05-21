@@ -16,31 +16,45 @@ function setScale() {
   document.querySelector("#screen").style.transform = `scale(${scale})`;
 }
 
-// 假设有一个名为 updateData() 的函数，可以从服务器获取最新的数据
-function updateData() {
-  // ... 获取最新的数据 ...
-}
-
 function boilControl() {
-  bton = document.getElementById("曝气控制");
+  const button = document.getElementById("曝气控制");
+  button.style.display='none';
+  const button1 = document.getElementById("自动");
+  const button2 = document.getElementById("手动");
+  button1.style.display='inline-block';
+  button2.style.display='inline-block';
+  button1.addEventListener("click",selectMode);
+  button2.addEventListener("click",selectMode);
   // 曝气控制信号发送
-  $.ajax({
-    url:'http://192.168.92.178:5000/test',  //后台接口地址
-    type:'post',  //post请求方式
-    async: true,
-    dataType:'json',
-    contentType:'application/json;charset=utf-8',
-    data:JSON.stringify({"LED0_STATE":1,"LED1_STATE":0,"LED2_STATE":1,"LED3_STATE":0,
-                         "LED4_STATE":0,"LED5_STATE":0,"LED6_STATE":0,"LED7_STATE":0}),
-    success:function(data){
-      alert(data);
-      console.log('请求成功')
-    },
-    error:function(){
-
-    }
-  })
+  {
+    $.ajax({
+      url:'http://192.168.92.178:5000/test',  //后台接口地址
+      type:'post',  //post请求方式
+      async: true,
+      dataType:'json',
+      contentType:'application/json;charset=utf-8',
+      data:JSON.stringify({"LED0_STATE":1,"LED1_STATE":0,"LED2_STATE":1,"LED3_STATE":0,
+                          "LED4_STATE":0,"LED5_STATE":0,"LED6_STATE":0,"LED7_STATE":0}),
+      success:function(data){
+        alert(data);
+        console.log('请求成功')
+      },
+      error:function(){
+      }
+    })
+  }
 }
+
+function selectMode(obj){
+  // const targetElement = obj.target;
+  const button = document.getElementById("曝气控制");
+  const button1 = document.getElementById("自动");
+  const button2 = document.getElementById("手动");
+  button.style.display='inline-block';
+  button1.style.display='none';
+  button2.style.display='none';
+}
+
 
 function onlineDetection() {
   bton = document.getElementById("在线监测");
@@ -92,7 +106,6 @@ $(document).ready(function () {
           },
           error: function (arg1) {
             console.log(1);
-            // alert("加载数据失败");
           },
         });
     }, IntervalTime * 2);
