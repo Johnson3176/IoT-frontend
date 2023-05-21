@@ -8,16 +8,19 @@ var vs, fs;
 var ref_x=0, ref_y = 0, ref_z = 0;
 
 
-/***** 定义墙体 *****/
+/***** 墙体参数 *****/
 var lengthLeftWall = 800, lengthMiddleWall = 400, lengthRightWall = 150;
 var heightWall = 600, widthWall = 400;
 var thicknessOuter = 10, thicknessInner = 5; 
 var heightDam = 450, distDam = 700;
-var distFan = 600, distBioReactor = 600, distPartWall = 500, distLeftMiddle = 100;
+var distBioReactor = 600, distPartWall = 500, distLeftMiddle = 10;
 
-var stoneRadius = 9, stoneHeight = 50;
+/***** 曝气石参数 *****/
+var stoneRadius = 9, stoneHeight = 50, stone2floor = 180;
 
-var distFan1 = 250, distFan2 = 300;
+/***** 风扇参数 *****/
+var distFan = 600
+var axisLengthFan1 = 250, axisLengthFan2 = 300;
 
 var fan_base_v=0.5;
 
