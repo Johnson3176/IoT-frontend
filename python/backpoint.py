@@ -117,14 +117,16 @@ def putData():
         "device_id": "6423d2874f1d6803244d4326_L610",
         # "service_id": "Sprayswitchcontrol"
     }
+    Body = ""
+    print(request.method)
     if request.method =='POST':
+        print(request.method)
         servicesContent = request.get_json()  # 获取字典格式数据
         BodyDict = dict()
         BodyDict["services"] = servicesContent
         Body = json.dumps(BodyDict)
-        print(Body)
-    res = requests.put(url=url_lj, headers=Headers,
-                        params=Params_lj, json=Body)  # 给华为云传数据
+        Body = json.loads(Body)
+    requests.put(url=url_lj, headers=Headers,params=Params_lj, json=Body)  # 给华为云传数据
     return "数据发送成功"
 
 # 装饰器（路由）
@@ -136,11 +138,7 @@ def putData():
 def getData():
     url_lj = "https://53e4ab6e10.st1.iotda-app.cn-north-4.myhuaweicloud.com:443/v5/iot/261f2cd698b848f591436f9adce09d89/devices/6423d2874f1d6803244d4326_L610/properties?service_id=Sprayswitchcontrol"
     url_jxy = "https://59a6084cfa.st1.iotda-app.cn-north-4.myhuaweicloud.com:443/v5/iot/35bacf8d0d634b3f8a70fc9b5286d79d/devices/641e635340773741f9fc2714_L610_CN2023/properties?service_id=SpraySwitch"
-    # token = token_lj
     token = token_lj
-    # file_path = "test.bmp"
-    # f = request.files['pic']
-    # if request.method == ''
     headers = {
         'X-Auth-Token': token
     }
