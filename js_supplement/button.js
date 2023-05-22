@@ -16,6 +16,31 @@ function setScale() {
   document.querySelector("#screen").style.transform = `scale(${scale})`;
 }
 
+function sendMessage(){
+  // 曝气控制信号发送
+  $.ajax({
+    url:'http://192.168.92.178:5000/test',  //后台接口地址
+    type:'post',  //post请求方式
+    async: true,
+    dataType:'json',
+    contentType:'application/json;charset=utf-8',
+    if()
+    {
+      string_data = {
+        "LED0_STATE":1,"LED1_STATE":0,"LED2_STATE":1,"LED3_STATE":0,
+        "LED4_STATE":0,"LED5_STATE":0,"LED6_STATE":0,"LED7_STATE":0
+      }
+    },
+    data:JSON.stringify(string_data),
+    success:function(data){
+      alert(data);
+      console.log('请求成功')
+    },
+    error:function(){
+    }
+  })
+}
+
 function boilControl() {
   const button = document.getElementById("曝气控制");
   button.style.display='none';
@@ -25,36 +50,63 @@ function boilControl() {
   button2.style.display='inline-block';
   button1.addEventListener("click",selectMode);
   button2.addEventListener("click",selectMode);
-  // 曝气控制信号发送
-  {
-    $.ajax({
-      url:'http://192.168.92.178:5000/test',  //后台接口地址
-      type:'post',  //post请求方式
-      async: true,
-      dataType:'json',
-      contentType:'application/json;charset=utf-8',
-      data:JSON.stringify({"LED0_STATE":1,"LED1_STATE":0,"LED2_STATE":1,"LED3_STATE":0,
-                          "LED4_STATE":0,"LED5_STATE":0,"LED6_STATE":0,"LED7_STATE":0}),
-      success:function(data){
-        alert(data);
-        console.log('请求成功')
-      },
-      error:function(){
-      }
-    })
+}
+
+
+
+function selectMode(obj){
+  const targetElement = obj.target;
+  const button1 = document.getElementById("自动");
+  const button2 = document.getElementById("手动");
+  button1.style.display='none';
+  button2.style.display='none';
+  if (targetElement.id=='自动'){
+    const buttonMode1 = document.getElementById("模式1");
+    const buttonMode2 = document.getElementById("模式2");
+    const buttonMode3 = document.getElementById("模式3");
+    buttonMode1.style.display='inline-block';
+    buttonMode2.style.display='inline-block';
+    buttonMode3.style.display='inline-block';
+    // buttonMode1.addEventListener("click",selectModeorDevice);
+    // buttonMode2.addEventListener("click",selectModeorDevice);
+    // buttonMode3.addEventListener("click",selectModeorDevice);
+  }
+  else {
+    const buttonDevice1 = document.getElementById("桨叶1");
+    const buttonDevice2 = document.getElementById("桨叶2");
+    const buttonDevice3 = document.getElementById("气盘1");
+    const buttonDevice4 = document.getElementById("气盘2");
+    const buttonDevice5 = document.getElementById("气盘3");
+    const buttonDevice6 = document.getElementById("气盘4");
+    const buttonDevice7 = document.getElementById("气盘5");
+    const buttonDevice8 = document.getElementById("气盘6");
+    buttonDevice1.style.display='inline-block';
+    buttonDevice2.style.display='inline-block';
+    buttonDevice3.style.display='inline-block';
+    buttonDevice4.style.display='inline-block';
+    buttonDevice5.style.display='inline-block';
+    buttonDevice6.style.display='inline-block';
+    buttonDevice7.style.display='inline-block';
+    buttonDevice8.style.display='inline-block';
   }
 }
 
-function selectMode(obj){
-  // const targetElement = obj.target;
-  const button = document.getElementById("曝气控制");
-  const button1 = document.getElementById("自动");
-  const button2 = document.getElementById("手动");
-  button.style.display='inline-block';
-  button1.style.display='none';
-  button2.style.display='none';
-}
+function selectModeorDevice(obj){
+  const targetElement = obj.target;
+  if(targetElement.id =='模式1' || targetElement.id =='模式2'|| targetElement.id =='模式3')
+  {
+    const buttonMode1 = document.getElementById("模式1");
+    const buttonMode2 = document.getElementById("模式2");
+    const buttonMode3 = document.getElementById("模式3");
+    buttonMode1.style.display='none';
+    buttonMode2.style.display='none';
+    buttonMode3.style.display='none';
 
+  }
+  else{
+    
+  }
+}
 
 function onlineDetection() {
   bton = document.getElementById("在线监测");

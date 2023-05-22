@@ -1,7 +1,7 @@
 // 全局变量
 var scene, camera, spotLight, stats, renderer, controls, fan1, fan2;
 var vs, fs;
-
+var obj;
 // 实物尺寸设置 （单位：mm)
 
 /***** 定义参考点 *****/
