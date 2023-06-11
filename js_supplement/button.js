@@ -76,7 +76,7 @@ $(document).ready(function () {
     controlInterval = setInterval(function () {
       if (auto_control)
         $.ajax({
-          url: "http://192.168.43.12:5000", //后台请求的数据
+          url: "http://192.168.64.219:5000", //后台请求的数据
           dataType: "json", // 预期返回的数据类型，如果是json格式，在接收到返回时会自动封装成json对象
           type: "get", // 请求方式
           async: true, // 是否异步请求

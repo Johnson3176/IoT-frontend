@@ -230,14 +230,16 @@
 					function createFloor() {
 						// 建立地面几何对象
 						var loader = new THREE.TextureLoader();  // 创建地面加载对象
-						loader.load("./node_modules/ThreeJs/images/floor.jpg", function (texture) {
+						loader.load("./node_modules/ThreeJs/images/floor-sharp.jpg", function (texture) {
 							texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
 							texture.repeat.set(10, 10);
-							var floorGeometry = new THREE.BoxGeometry(2000, 1500, 1);  // 很薄的一张地面
+							var floorGeometry = new THREE.BoxGeometry(1800, 1000, 2);  // 很薄的一张地面
 							var floorMaterial = new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide });
 							var floor = new THREE.Mesh(floorGeometry, floorMaterial);
-							floor.position.y = -0.5;
+							floor.position.y = -20;
+							floor.position.x = -200;
 							floor.rotation.x = Math.PI / 2;
+
 							floor.name = "地面";
 							scene.add(floor);
 						});
@@ -438,9 +440,9 @@
 					}
 
 					function createToptube() {
-						createCubeWall(40, 10, 1100, 0.5, new THREE.MeshPhongMaterial({ color: 0xfffe9f }), -130, 560, -100);
+						createCubeWall(40, 10, 1100, 0.5, new THREE.MeshPhongMaterial({ color: 0xafc0ca, opacity: 0.7, transparent: true }), -130, 560, -100);
 						// createCubeWall(25, 10, 1100, 0.5, new THREE.MeshPhongMaterial({ color: 0xfffe9f }), -200, 560, 100);
-						createCubeWall(40, 10, 1100, 0.5, new THREE.MeshPhongMaterial({ color: 0xfffe9f }), -130, 560, 100);
+						createCubeWall(40, 10, 1100, 0.5, new THREE.MeshPhongMaterial({ color: 0xafc0ca, opacity: 0.7, transparent: true }), -130, 560, 100);
 					}
 
 					function createFans(x1, y1, z1, x2, y2, z2) {
@@ -474,16 +476,18 @@
 						createFloor();
 						// 创建污水处理容器
 						var opacity_set = 0.7
-						createCubeWall(thicknessOuter, heightWall, lengthLeftWall, 0.5, new THREE.MeshPhongMaterial({ color: 0xafc0ca, opacity: opacity_set, transparent: true }), ref_y - lengthLeftWall / 2, heightWall / 2, widthWall / 2, "进水曝气前墙面");
-						createCubeWall(thicknessOuter, heightWall, widthWall, 0, new THREE.MeshPhongMaterial({ color: 0xafc0ca, opacity: opacity_set, transparent: true }), ref_y - lengthLeftWall, heightWall / 2, 0, "进水曝气左墙面");
-						createCubeWall(thicknessInner, heightDam, widthWall, 1, new THREE.MeshPhongMaterial({ color: 0xafc0ca, opacity: opacity_set, transparent: true }), ref_y - distDam, heightDam / 2, 0, "左挡板");
-						createCubeWall(thicknessInner, heightWall, widthWall, 1, new THREE.MeshPhongMaterial({ color: 0xafc0ca, opacity: opacity_set, transparent: true }), ref_y - distPartWall, heightWall / 2, 0, "左隔层");
-						createCubeWall(thicknessOuter, heightWall, widthWall, 1, new THREE.MeshPhongMaterial({ color: 0xafc0ca, opacity: opacity_set, transparent: true }), ref_y, heightWall / 2, 0, "进水曝气右墙面");
-						createCubeWall(thicknessOuter, heightWall, lengthLeftWall, 1.5, new THREE.MeshPhongMaterial({ color: 0xafc0ca, opacity: opacity_set, transparent: true }), ref_y - lengthLeftWall / 2, heightWall / 2, -widthWall / 2, "进水曝气后墙面");
-						createCubeWall(thicknessOuter, heightWall, lengthMiddleWall, 0.5, new THREE.MeshPhongMaterial({ color: 0xafc0ca, opacity: opacity_set, transparent: true }), ref_y + distLeftMiddle + lengthMiddleWall / 2, heightWall / 2, widthWall / 2, "出水前墙面");
-						createCubeWall(thicknessOuter, heightWall, widthWall, 1, new THREE.MeshPhongMaterial({ color: 0xafc0ca, opacity: opacity_set, transparent: true }), ref_y + distLeftMiddle, heightWall / 2, 0, "出水左墙面");
-						createCubeWall(thicknessOuter, heightWall, widthWall, 1, new THREE.MeshPhongMaterial({ color: 0xafc0ca, opacity: opacity_set, transparent: true }), ref_y + distLeftMiddle + lengthMiddleWall, heightWall / 2, 0, "出水右墙面");
-						createCubeWall(thicknessOuter, heightWall, lengthMiddleWall, 0.5, new THREE.MeshPhongMaterial({ color: 0xafc0ca, opacity: opacity_set, transparent: true }), ref_y + distLeftMiddle + lengthMiddleWall / 2, heightWall / 2, -widthWall / 2, "出水后墙面");
+						createCubeWall(thicknessOuter, heightWall, lengthLeftWall, 0.5, new THREE.MeshPhongMaterial({ color: 0xfafafa, opacity: opacity_set, transparent: true }), ref_y - lengthLeftWall / 2, heightWall / 2, widthWall / 2, "进水曝气前墙面");
+						createCubeWall(lengthLeftWall, thicknessOuter, widthWall, 0, new THREE.MeshPhongMaterial({ color: 0xfafafa, opacity: opacity_set, transparent: true }), ref_y - lengthLeftWall / 2, -thicknessOuter/2, 0, "进水曝气底面");
+						createCubeWall(thicknessOuter, heightWall, widthWall, 0, new THREE.MeshPhongMaterial({ color: 0xfafafa, opacity: opacity_set, transparent: true }), ref_y - lengthLeftWall, heightWall / 2, 0, "进水曝气左墙面");
+						createCubeWall(thicknessInner, heightDam, widthWall, 1, new THREE.MeshPhongMaterial({ color: 0xfafafa, opacity: opacity_set, transparent: true }), ref_y - distDam, heightDam / 2, 0, "左挡板");
+						createCubeWall(thicknessInner, heightWall, widthWall, 1, new THREE.MeshPhongMaterial({ color: 0xfafafa, opacity: opacity_set, transparent: true }), ref_y - distPartWall, heightWall / 2, 0, "左隔层");
+						createCubeWall(thicknessOuter, heightWall, widthWall, 1, new THREE.MeshPhongMaterial({ color: 0xfafafa, opacity: opacity_set, transparent: true }), ref_y, heightWall / 2, 0, "进水曝气右墙面");
+						createCubeWall(thicknessOuter, heightWall, lengthLeftWall, 1.5, new THREE.MeshPhongMaterial({ color: 0xfafafa, opacity: opacity_set, transparent: true }), ref_y - lengthLeftWall / 2, heightWall / 2, -widthWall / 2, "进水曝气后墙面");
+						createCubeWall(thicknessOuter, heightWall, lengthMiddleWall, 0.5, new THREE.MeshPhongMaterial({ color: 0xfafafa, opacity: opacity_set, transparent: true }), ref_y + distLeftMiddle + lengthMiddleWall / 2, heightWall / 2, widthWall / 2, "出水前墙面");
+						createCubeWall(lengthMiddleWall, thicknessOuter, widthWall, 0, new THREE.MeshPhongMaterial({ color: 0xfafafa, opacity: opacity_set, transparent: true }), ref_y + distLeftMiddle + lengthMiddleWall / 2, -thicknessOuter/2, 0, "出水底面");
+						createCubeWall(thicknessOuter, heightWall, widthWall, 1, new THREE.MeshPhongMaterial({ color: 0xfafafa, opacity: opacity_set, transparent: true }), ref_y + distLeftMiddle, heightWall / 2, 0, "出水左墙面");
+						createCubeWall(thicknessOuter, heightWall, widthWall, 1, new THREE.MeshPhongMaterial({ color: 0xfafafa, opacity: opacity_set, transparent: true }), ref_y + distLeftMiddle + lengthMiddleWall, heightWall / 2, 0, "出水右墙面");
+						createCubeWall(thicknessOuter, heightWall, lengthMiddleWall, 0.5, new THREE.MeshPhongMaterial({ color: 0xfafafa, opacity: opacity_set, transparent: true }), ref_y + distLeftMiddle + lengthMiddleWall / 2, heightWall / 2, -widthWall / 2, "出水后墙面");
 
 						//创建缺氧生物反应器
 						// createBioreactor();
