@@ -4,16 +4,12 @@ import requests
 import json
 
 # 创建Flask的实例对象
-# app = Flask(__name__) # 确定工程文件目录 -> Flask('模块名')
-# app = Flask(__name__, static_url_path='/s')
-app = Flask(__name__, static_url_path='/s',
-            static_folder='static', template_folder='templates')
+app = Flask(__name__, static_url_path='/s',static_folder='static', template_folder='templates')
 token_jxy = ""
 token_lj = ""
-# 首先需要获取token，为获取设备信息提供身份验证
 
-
-@app.route('/')
+# 首先获取token，提供身份验证
+@app.route('/')  # 装饰器（路由）与函数绑定
 @cross_origin()
 def start():
     url = r"https://iam.cn-north-4.myhuaweicloud.com/v3/auth/tokens"
@@ -32,29 +28,6 @@ def start():
                         "password": "mayuguojia4",
                         "domain": {
                             "name": "hw091458930"
-                        }
-                    }
-                }
-            },
-            "scope": {
-                "project": {
-                    "name": "cn-north-4"
-                }
-            }
-        }
-    }
-    Body_gjq = {
-        "auth": {
-            "identity": {
-                "methods": [
-                    "password"
-                ],
-                "password": {
-                    "user": {
-                        "name": "IoT-Water",
-                        "password": "GJQ1030ab",
-                        "domain": {
-                            "name": "jiaqiyun"
                         }
                     }
                 }
@@ -91,11 +64,9 @@ def start():
     }
     try:
         response_jxy = requests.post(url=url, headers=Headers, json=Body_jxy)
-        # response_gjq = requests.post(url=url, headers=Headers, json=Body_gjq)
         response_lj = requests.post(url=url, headers=Headers, json=Body_lj)
         global token_jxy, token_gjq, token_lj
         token_jxy = response_jxy.headers["X-Subject-Token"]
-        # token_gjq = response_gjq.headers["X-Subject-Token"]
         token_lj = response_lj.headers["X-Subject-Token"]
         global token_flag
         token_flag = True
@@ -109,8 +80,9 @@ def start():
 def putData():
     # 设备链接
     url_lj = "https://53e4ab6e10.st1.iotda-app.cn-north-4.myhuaweicloud.com:443/v5/iot/261f2cd698b848f591436f9adce09d89/devices/6423d2874f1d6803244d4326_L610/properties?service_id=Sprayswitchcontrol"
+    url_jxy = "https://59a6084cfa.st1.iotda-app.cn-north-4.myhuaweicloud.com:443/v5/iot/35bacf8d0d634b3f8a70fc9b5286d79d/devices/641e635340773741f9fc2714_L610_CN2023/properties?service_id=SpraySwitch"
     Headers = {
-        "X-Auth-Token": token_lj
+        "X-Auth-Token": token_jxy
     }
     # 发送Body中所包含的信息
     Params_lj = {
@@ -140,17 +112,17 @@ def putData():
                         params=Params_lj, json=Body)  # 给华为云传数据
     return "数据发送成功"
 
-# 装饰器（路由）
+
 
 
 @app.route('/data', methods=['POST', 'GET'])
 @cross_origin()
 # 视图函数
 def getData():
-    url_lj = "https://53e4ab6e10.st1.iotda-app.cn-north-4.myhuaweicloud.com:443/v5/iot/261f2cd698b848f591436f9adce09d89/devices/6423d2874f1d6803244d4326_L610/properties?service_id=Sprayswitchcontrol"
+    # url_lj = "https://53e4ab6e10.st1.iotda-app.cn-north-4.myhuaweicloud.com:443/v5/iot/261f2cd698b848f591436f9adce09d89/devices/6423d2874f1d6803244d4326_L610/properties?service_id=Sprayswitchcontrol"
     url_jxy = "https://59a6084cfa.st1.iotda-app.cn-north-4.myhuaweicloud.com:443/v5/iot/35bacf8d0d634b3f8a70fc9b5286d79d/devices/641e635340773741f9fc2714_L610_CN2023/properties?service_id=SpraySwitch"
     # token = token_lj
-    token = token_lj
+    token = token_jxy
     # file_path = "test.bmp"
     # f = request.files['pic']
     # if request.method == ''
@@ -171,7 +143,7 @@ def getData():
     # }
     properties = ''
     try:
-        resp = requests.get(url_lj, headers=headers, params=Params)
+        resp = requests.get(url_jxy, headers=headers, params=Params)
         data = json.loads(resp.text)
         response = data["response"]
         services = response["services"][0]
