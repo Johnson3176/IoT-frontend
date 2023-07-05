@@ -37,9 +37,9 @@ function onlineDetection() {
     dataType:'json',
     contentType:'application/json;charset=utf-8',
   })
-  bton = document.getElementById("在线曝气");
+  bton = document.getElementById("在线监测");
   if (!is_on) {
-    bton.innerHTML = "暂停曝气";
+    bton.innerHTML = "暂停监测";
     $.ajax({
       url:'http://192.168.64.219:5000/ctrl_motor2/1',  //后台接口地址
       type:'get',  //get请求方式
@@ -70,7 +70,7 @@ function onlineDetection() {
     })
     is_on = true;
   } else {
-    bton.innerHTML = "继续曝气";
+    bton.innerHTML = "继续监测";
     is_on = false;
     $.ajax({
       url:'http://192.168.64.219:5000/ctrl_motor2/0',  //后台接口地址

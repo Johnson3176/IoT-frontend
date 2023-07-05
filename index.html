@@ -89,13 +89,42 @@
 
 			background-color: #1E90FF;
 			color: white;
-			margin-left: 20px;
+			position: absolute;
 			width: 130px;
 			height: 80px;
 			border: 0;
 			font-size: 20px;
 			border-radius: 30px;
 			cursor: pointer;
+		}
+		
+		.subbuttons{
+			display: none;
+			background-color: #00fae5;
+			position: absolute;
+			cursor: pointer;
+			width: 65px;
+			height: 80px;
+			font-size: 20px;
+		}
+		.rankbuttons{
+			display: none;
+			background-color: #00fae5;
+			position: absolute;
+			cursor: pointer;
+			width: 43.3px;
+			height: 80px;
+			font-size: 20px;
+		}
+
+		.targetbuttons{
+			display: none;
+			background-color: #00fae5;
+			position: absolute;
+			cursor: pointer;
+			width: 30px;
+			height: 50px;
+			font-size: 8px;
 		}
 
 		.buttons:hover {
@@ -108,7 +137,9 @@
 
 		table {
 			border: 1px solid;
-			margin-left: 90px;
+			position: absolute;
+			margin-left:35%;
+			/* margin-left: 90px; */
 			width: 1000px;
 		}
 
@@ -598,10 +629,30 @@
 				</script>
 			</div>
 			<div id="div_bottom">
-				<button class="buttons" id="曝气控制" onclick="boilControl()">曝气控制</button>
-				<button class="buttons" id="在线曝气" onclick="onlineDetection()">开始曝气</button>
-				<button class="buttons" id="获取数据" onclick="acquireData()">获取数据</button>
-				<button class="buttons" id="退出">退出</button>
+				<button class="buttons" style="margin-left: 1%;" id="曝气控制" onclick="boilControl()">曝气控制</button>
+				
+				<button class="subbuttons" style="margin-left: 1%;" id="自动" onclick="selectMode(obj)">自动</button>
+				<button class="subbuttons" style="margin-left: 4.4%;" id="手动" onclick="selectMode(obj)">手动</button>
+
+				<button class="rankbuttons" style="margin-left: 1%;" id="模式1">模式1</button>
+				<button class="rankbuttons" style="margin-left: 3.3%;" id="模式2">模式2</button>
+				<button class="rankbuttons" style="margin-left: 5.6%;" id="模式3">模式3</button>
+				
+				<button class="targetbuttons" style="margin-left: 1%; top: 88%;" id="桨叶1">桨叶1</button>
+				<button class="targetbuttons" style="margin-left: 2.7%; top: 88%;" id="气盘1">气盘1</button>
+				<button class="targetbuttons" style="margin-left: 4.4%; top: 88%;" id="气盘2">气盘2</button>
+				<button class="targetbuttons" style="margin-left: 6.1%; top: 88%;" id="气盘3">气盘3</button>
+				<button class="targetbuttons" style="margin-left: 1%; top: 93%;" id="桨叶2">桨叶2</button>
+				<button class="targetbuttons" style="margin-left: 2.7%; top: 93%;" id="气盘4">气盘4</button>
+				<button class="targetbuttons" style="margin-left: 4.4%; top: 93%;" id="气盘5">气盘5</button>
+				<button class="targetbuttons" style="margin-left: 6.1%; top: 93%;" id="气盘6">气盘6</button>
+				
+				<button class="subbuttons" style="margin-left: 1%;" id="开启">开启</button>
+				<button class="subbuttons" style="margin-left: 4.4%;" id="关闭">关闭</button>
+
+				<button class="buttons" style="margin-left: 9%;" id="在线监测" onclick="onlineDetection()">开始监测</button>
+				<button class="buttons" style="margin-left: 17%;" id="历史数据">历史数据</button>
+				<button class="buttons" style="margin-left: 25%;" id="退出">退出</button>
 				<table id="myTable" bgcolor="#AAFF00">
 					<tbody>
 						<thead>
