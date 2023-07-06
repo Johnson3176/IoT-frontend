@@ -1,35 +1,28 @@
-// 定义全局变量
-
 var is_on = false;
 var IntervalTime = 1000;
 var auto_control = 1;
 
 function setScale() {
-  let designWidth = 1440; //设计稿的宽度，根据实际项目调整
-  let designHeight = 1024; //设计稿的高度，根据实际项目调整
-  let scale =
-    document.documentElement.clientWidth /
-      document.documentElement.clientHeight <
-    designWidth / designHeight
-      ? document.documentElement.clientWidth / designWidth
-      : document.documentElement.clientHeight / designHeight;
+  let designWidth = 1440;
+  let designHeight = 1024;
+  let scale = document.documentElement.clientWidth / document.documentElement.clientHeight < designWidth / designHeight 
+    ? document.documentElement.clientWidth / designWidth : document.documentElement.clientHeight / designHeight;
   document.querySelector("#screen").style.transform = `scale(${scale})`;
 }
 
-function sendMessage(s_data){
+function sendMessage(msg){
   // 曝气控制信号发送
   $.ajax({
-    url:'http://192.168.196.178:5000/test',  //后台接口地址
-    type:'post',  //post请求方式
-    async: true,
+    url:'http://192.168.43.117:5000/'+msg,  //后台接口地址
+    type:"get",  //get请求方式
     dataType:'json',
-    contentType:'application/json;charset=utf-8',
-    data:JSON.stringify(s_data),
+    async: true,
+    // contentType:'application/json;charset=utf-8',
+    // data:JSON.stringify(s_data),
     success:function(data){
       console.log('请求成功')
     },
-    error:function(){
-    }
+    error:function(){}
   })
 }
 
@@ -186,63 +179,88 @@ function selectOn(obj){
   switch (current_device)
   {
     case '桨叶1':
-      if(targetElement.id=='开启')
-        string_led_data.LED0_STATE = 1;
-      else
-        string_led_data.LED0_STATE = 0;
-      sf1 = string_led_data.LED0_STATE;
+      if(targetElement.id=='开启'){
+        sdata='ctrl_switch2/ON';
+        sf1 = 1;
+      }
+      else{
+        sdata='ctrl_switch2/OFF';
+        sf1 = 0;
+      }
       break;
     case '桨叶2':
-      if(targetElement.id=='开启')
-        string_led_data.LED1_STATE = 1;
-      else
-        string_led_data.LED1_STATE = 0;
-      sf2 = string_led_data.LED1_STATE;
+      if(targetElement.id=='开启'){
+        sdata='ctrl_switch3/ON';
+        sf2 = 1;
+      }
+      else{
+        sdata='ctrl_switch3/OFF';
+        sf2 = 0;
+      }
       break;
+    
     case '气盘1':
-      if(targetElement.id=='开启')
-        string_led_data.LED2_STATE = 1;
-      else
-        string_led_data.LED2_STATE = 0;
-      sb1 = string_led_data.LED2_STATE;
+      if(targetElement.id=='开启'){
+        sdata='ctrl_motor0/2';
+        sb1 = 1;
+      }
+      else{
+        sdata='ctrl_motor0/0';
+        sb1 = 0;
+      }
       break;
     case '气盘2':
-      if(targetElement.id=='开启')
-        string_led_data.LED3_STATE = 1;
-      else
-        string_led_data.LED3_STATE = 0;
-      sb2 = string_led_data.LED3_STATE;
+      if(targetElement.id=='开启'){
+        sdata='ctrl_motor1/2';
+        sb2 = 1;
+      }
+      else{
+        sdata='ctrl_motor1/0';
+        sb2 = 0;
+      }
       break;
     case '气盘3':
-      if(targetElement.id=='开启')
-        string_led_data.LED4_STATE = 1;
-      else
-        string_led_data.LED4_STATE = 0;
-      sb3 = string_led_data.LED4_STATE;
+      if(targetElement.id=='开启'){
+        sdata='ctrl_motor2/2';
+        sb3 = 1;
+      }
+      else{
+        sdata='ctrl_motor2/0';
+        sb3 = 0;
+      }
       break;
     case '气盘4':
-      if(targetElement.id=='开启')
-        string_led_data.LED5_STATE = 1;
-      else
-        string_led_data.LED5_STATE = 0;
-      sb4 = string_led_data.LED5_STATE;
+      if(targetElement.id=='开启'){
+        sdata='ctrl_motor3/2';
+        sb4 = 1;
+      }
+      else{
+        sdata='ctrl_motor3/0';
+        sb4 = 0;
+      }
       break;
     case '气盘5':
-      if(targetElement.id=='开启')
-        string_led_data.LED6_STATE = 1;
-      else
-        string_led_data.LED6_STATE = 0;
-      sb5 = string_led_data.LED6_STATE;
+      if(targetElement.id=='开启'){
+        sdata='ctrl_motor4/2';
+        sb5 = 1;
+      }
+      else{
+        sdata='ctrl_motor4/0';
+        sb5 = 0;
+      }
       break;
     case '气盘6':
-      if(targetElement.id=='开启')
-        string_led_data.LED7_STATE = 1;
-      else
-        string_led_data.LED7_STATE = 0;
-      sb6 = string_led_data.LED7_STATE;
+      if(targetElement.id=='开启'){
+        sdata='ctrl_motor5/2';
+        sb6 = 1;
+      }
+      else{
+        sdata='ctrl_motor5/0';
+        sb6 = 0;
+      }
       break;
   }
-  sendMessage(string_led_data);
+  sendMessage(sdata);
 }
 
 function onlineDetection() {
@@ -266,7 +284,7 @@ window.onresize = function () {
 // 通过 jQuery，您可以选取（查询，query） HTML 元素，并对它们执行"操作"（actions）。
 $(document).ready(function () {
   $.ajax({
-    url: "http://192.168.196.178:5000/", //首先请求一次后台，再进行其他操作
+    url: "http://192.168.43.117:5000/", //首先请求一次后台，再进行其他操作
     dataType: "json", // 预期返回的数据类型，如果是json格式，在接收到返回时会自动封装成json对象
     type: "get", // 请求方式
     async: true, // 是否异步请求
