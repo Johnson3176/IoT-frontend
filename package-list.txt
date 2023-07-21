@@ -1,0 +1,5 @@
+# 第一次3D工厂参考
+ThreeJs
+
+# 安装kokomi.js
+npm i kokomi.js

@@ -2,27 +2,31 @@ var is_on = false;
 var IntervalTime = 1000;
 var auto_control = 1;
 
+
 function setScale() {
   let designWidth = 1440;
   let designHeight = 1024;
   let scale = document.documentElement.clientWidth / document.documentElement.clientHeight < designWidth / designHeight 
     ? document.documentElement.clientWidth / designWidth : document.documentElement.clientHeight / designHeight;
-  document.querySelector("#screen").style.transform = `scale(${scale})`;
+  // document.querySelector("#screen").style.transform = `scale(${scale})`;
 }
 
 function sendMessage(msg){
   // 曝气控制信号发送
   $.ajax({
-    url:'http://192.168.43.117:5000/'+msg,  //后台接口地址
+    url: baseUrl+msg,  //后台接口地址
     type:"get",  //get请求方式
     dataType:'json',
     async: true,
     // contentType:'application/json;charset=utf-8',
     // data:JSON.stringify(s_data),
     success:function(data){
-      console.log('请求成功')
+      console.log('请求成功');
+
     },
-    error:function(){}
+    error:function(){
+      console.log(url)
+    }
   })
 }
 
@@ -55,6 +59,154 @@ function recvMessage(ModeTime){
   const button = document.getElementById("曝气控制");
   button.addEventListener("click",function(){clearInterval(controlInterval);});
   
+}
+
+
+function gpioControlFan1(){
+  const button = document.getElementById("桨叶1");
+  if(sf1==0){
+    button.style.backgroundColor='#FF0000';
+    sf1=1;
+    var sdata='ctrl_switch0/ON';
+    sendMessage(sdata);
+  }
+  else{
+    button.style.backgroundColor='#EEE';
+    sf1=0;
+    var sdata='ctrl_switch0/OFF';
+    sendMessage(sdata);
+  }
+}
+
+
+function gpioControlFan2(){
+  const button = document.getElementById("桨叶2");
+  if(sf2==0){
+    button.style.backgroundColor='#FF0000';
+    sf2=1;
+    var sdata='ctrl_switch1/ON';
+    sendMessage(sdata);
+  }
+  else{
+    button.style.backgroundColor='#EEE';
+    sf2=0;
+    var sdata='ctrl_switch1/OFF';
+    sendMessage(sdata);
+  }
+}
+
+function gpioControlStoneGroup1(){
+  const button = document.getElementById("曝气石组1");
+  if(ssg1==0){
+    button.style.backgroundColor='#FF0000';
+    ssg1=1;
+    var sdata='ctrl_switch2/ON';
+    sendMessage(sdata);
+  }
+  else{
+    button.style.backgroundColor='#EEE';
+    ssg1=0;
+    var sdata='ctrl_switch2/OFF';
+    sendMessage(sdata);
+  }
+}
+
+function gpioControlStoneGroup2(){
+  const button = document.getElementById("曝气石组2");
+  if(ssg2==0){
+    button.style.backgroundColor='#FF0000';
+    ssg2=1;
+    var sdata='ctrl_switch3/ON';
+    sendMessage(sdata);
+  }
+  else{
+    button.style.backgroundColor='#EEE';
+    ssg2=0;
+    var sdata='ctrl_switch3/OFF';
+    sendMessage(sdata);
+  }
+}
+
+function gpioControlStoneGroup3(){
+  const button = document.getElementById("曝气石组3");
+  if(ssg3==0){
+    button.style.backgroundColor='#FF0000';
+    ssg3=1;
+    var sdata='ctrl_switch4/ON';
+    sendMessage(sdata);
+  }
+  else{
+    button.style.backgroundColor='#EEE';
+    ssg3=0;
+    var sdata='ctrl_switch4/OFF';
+    sendMessage(sdata);
+  }
+}
+
+function gpioControlStoneGroup4(){
+  const button = document.getElementById("曝气石组4");
+  if(ssg4==0){
+    button.style.backgroundColor='#FF0000';
+    ssg4=1;
+    var sdata='ctrl_switch5/ON';
+    sendMessage(sdata);
+  }
+  else{
+    button.style.backgroundColor='#EEE';
+    ssg4=0;
+    var sdata='ctrl_switch5/OFF';
+    sendMessage(sdata);
+  }
+}
+
+function dataDetection(){
+  const button = document.getElementById("数据监测");
+  if(is_on==0){
+    button.style.backgroundColor='#FF0000';
+    is_on=1;
+  }
+  else{
+    button.style.backgroundColor='#EEE';
+    is_on=0;
+  }
+}
+
+function pwmControlPlate1(){
+  // 目前尚未知道如何获取触发物体的特性
+  var value=document.getElementById('曝气盘1拉条').value/10;
+  // 使用ES6模板字符串
+  var sdata=`ctrl_motor0/${value}`;
+  sendMessage(sdata);
+}
+
+function pwmControlPlate2(){
+  var value=document.getElementById('曝气盘2拉条').value/10;
+  var sdata=`ctrl_motor1/${value}`;
+  sendMessage(sdata);
+}
+
+function pwmControlPlate3(){
+  var value=document.getElementById('曝气盘3拉条').value/10;
+  var sdata=`ctrl_motor2/${value}`;
+  sendMessage(sdata);
+}
+
+function pwmControlPlate4(){
+  var value=document.getElementById('曝气盘4拉条').value/10;
+  var sdata=`ctrl_motor3/${value}`;
+  sendMessage(sdata);
+}
+
+function pwmControlPlate5(){
+  var value=document.getElementById('曝气盘5拉条').value/10;
+  var sdata=`ctrl_motor4/${value}`;
+  sendMessage(sdata);
+}
+
+function pwmControlPlate6(){
+  var value=document.getElementById('曝气盘6拉条').value/10;
+  var sdata=`ctrl_motor5/${value}`;
+  sendMessage(sdata);
 }
 
 function boilControl() {
@@ -281,10 +433,12 @@ window.onresize = function () {
   setScale();
 };
 
+
+
 // 通过 jQuery，您可以选取（查询，query） HTML 元素，并对它们执行"操作"（actions）。
 $(document).ready(function () {
   $.ajax({
-    url: "http://192.168.43.117:5000/", //首先请求一次后台，再进行其他操作
+    url: baseUrl, //首先请求一次后台，再进行其他操作
     dataType: "json", // 预期返回的数据类型，如果是json格式，在接收到返回时会自动封装成json对象
     type: "get", // 请求方式
     async: true, // 是否异步请求
@@ -293,8 +447,16 @@ $(document).ready(function () {
     error: function (arg1) {
     },
   });
-
-
+  $.ajax({
+    url: baseUrl+'start_get', //首先请求一次后台，再进行其他操作
+    dataType: "json", // 预期返回的数据类型，如果是json格式，在接收到返回时会自动封装成json对象
+    type: "get", // 请求方式
+    async: true, // 是否异步请求
+    success: function (data) {
+    },
+    error: function (arg1) {
+    },
+  });
   $(function () {
     let text = $("#fTbody:first");
     let status = $("#在线监测");
@@ -302,9 +464,9 @@ $(document).ready(function () {
     let requestInterval; // 定义请求间隔句柄
     let updateInterval; // 定义需要清除动画的部分
     let tr_tmp1 = "<tr><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td></tr>";
-    let tr_tmp2 = tr_tmp1,
-      tr_tmp3 = tr_tmp1;
-
+    let tr_tmp2 = tr_tmp1;
+    let tr_tmp3 = tr_tmp1;
+    let tr_tmp4 = tr_tmp1;
     // 添加鼠标悬停事件，悬停时页面数据暂时不会更新，但是悬停结束后会变成最新数据
     text
       .hover(
@@ -317,20 +479,24 @@ $(document).ready(function () {
           requestInterval = setInterval(function () {
             if (is_on)
               $.ajax({
-                url: "http://192.168.43.183:5000/query", //后台请求的数据
+
+                url: baseUrl+"/query1", //后台请求的数据
                 dataType: "json", // 预期返回的数据类型，如果是json格式，在接收到返回时会自动封装成json对象
                 type: "get", // 请求方式
                 async: true, // 是否异步请求
                 success: function (data) {
+                  data=data[0]
                   let td;
-                  td = "<td>" + data.time + "</td>";
-                  td = "<td>" + data.temperature + "</td>";
-                  td = "<td>" + data.DO + "</td>";
-                  td = "<td>" + data.PH + "</td>";
-                  td = "<td>" + data.TDS + "</td>";
+                  td = "<td>" + data['datetime'] + "</td>";
+                  td += "<td>" + data['temperature'] + "</td>";
+                  td += "<td>" + data['DO'] + "</td>";
+                  td += "<td>" + data['PH'] + "</td>";
+                  td += "<td>" + data['TDS'] + "</td>";
                   tr_tmp1 = tr_tmp2;
                   tr_tmp2 = tr_tmp3;
-                  tr_tmp3 = "<tr>" + td + "</tr>";
+                  tr_tmp3 = tr_tmp4;
+                  tr_tmp4 = "<tr>" + td + "</tr>";
+                  console.log(td);
                 },
                 error: function (arg1) {
                   console.log(arg1);
@@ -339,7 +505,7 @@ $(document).ready(function () {
               });
           }, IntervalTime);
           updateInterval = setInterval(function () {
-            if (is_on) text.html(tr_tmp1 + tr_tmp2 + tr_tmp3);
+            if (is_on) text.html(tr_tmp1 + tr_tmp2 + tr_tmp3+tr_tmp4);
           }, IntervalTime); // 滚动间隔时间
         }
       )

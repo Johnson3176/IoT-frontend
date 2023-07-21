@@ -3,8 +3,12 @@ import * as THREE from "three";
 import Stats from "stats.js";  // 用于导入性能插件，显示性能信息
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";  // 用于鼠标移动视角
 import { OBJLoader } from "three/examples/jsm/loaders/OBJLoader";  // 用于加载3D模型
-import { ThreeBSP } from "../node_modules/ThreeJs/js/ThreeBSP.js";  // 多个模型组合，如交并运算  &&  还存放有地板图片
+import { Water } from "three/examples/jsm/objects/Water2";
+
+import { ThreeBSP } from "../ThreeJs/js/ThreeBSP.js";  // 多个模型组合，如交并运算  &&  还存放有地板图片
+import { ParametricGeometry } from 'three/addons/geometries/ParametricGeometry.js';
 import { MeshSurfaceSampler } from "three/addons/math/MeshSurfaceSampler.js";
+import * as kokomi from "kokomi.js";
 
 // 1.初始化场景
 function initScene() {
@@ -36,17 +40,7 @@ function initLight() {
     scene.add(ambienLight);  // 将光源加入到场景中
 }
 
-// 4.初始化性能插件
-// function initStats() {
-// 	stats = new Stats();
-// 	stats.domElement.style.position = 'absolute';  // 在网页中的绝对位置
-// 	stats.domElement.style.left = '0px';  // 左侧像素
-// 	stats.domElement.style.top = '0px';  // 顶侧像素
-// 	document.body.appendChild(stats.domElement);  // 将插件加入到网页中
-// 	return stats;
-// }
-
-// 5.初始化渲染器
+// 4.初始化渲染器
 function initRenderer() {
     renderer = new THREE.WebGLRenderer();
     const div_mid = document.getElementById("div_model");  // javascript中获取div元素，设置在网页的中间位置
@@ -56,12 +50,12 @@ function initRenderer() {
     div_mid.appendChild(renderer.domElement);
 }
 
-// 6.初始化内容
+// 5.初始化内容
 
 function createFloor() {
     // 建立地面几何对象
     var loader = new THREE.TextureLoader();  // 创建地面加载对象
-    loader.load("./node_modules/ThreeJs/images/floor-sharp.jpg", function (texture) {
+    loader.load("./ThreeJs/images/floor-sharp.jpg", function (texture) {
         texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
         texture.repeat.set(10, 10);
         var floorGeometry = new THREE.BoxGeometry(1800, 1000, 2);  // 很薄的一张地面
@@ -126,86 +120,77 @@ function createStone(radius, height, material, x, y, z, name) {
     stone.add(stoneMesh_part1);
     stone.add(stoneMesh_part2);
     stone.add(stoneMesh_part3);
-
+    
     stone.name = name;
     scene.add(stone);
+
+    // 此处有一个bug！！！！  stoneMesh_part1和stone共用颜色
+    return stoneMesh_part1;
 }
 
-function createBioreactor() {
-    // 创建缺氧生物反应器
-    var radiusSeg = 32;
-    var heightSeg = 1;
-    createCubeWall(10, 200, 200, 0, new THREE.MeshPhongMaterial({ color: 0xafc0ca }), ref_y - distBioReactor, 100, 0, "生物反应器-横板");
+function createWater(){
+    // 创建用于水面的平面几何体
+    const waterGeometry = new THREE.PlaneGeometry(10000, 10000);
 
-    var smallCylinderGeom = new THREE.CylinderGeometry(30, 30, 200, radiusSeg, heightSeg);  // 上半径、下半径、高度、圆面光滑度
-    var largeCylinderGeom = new THREE.CylinderGeometry(40, 40, 200, radiusSeg, heightSeg);
-    var cubeGeometry = new THREE.BoxGeometry(100, 200, 50);
-    var material = new THREE.MeshLambertMaterial({ color: 0xafc0ca });
-    var cube = new THREE.Mesh(cubeGeometry, material);
-    cube.position.z = 25;
-    var smallCylinderBSP = new ThreeBSP(smallCylinderGeom);
-    var largeCylinderBSP = new ThreeBSP(largeCylinderGeom);
-    var cubeBSP = new ThreeBSP(cube);
-
-    var intersectionBSP = largeCylinderBSP.subtract(smallCylinderBSP);  // 外面的减去里面的
-    var intersectionBSP1 = intersectionBSP.subtract(cubeBSP);  // 圆柱环减去一半
-    var redMaterial = new THREE.MeshLambertMaterial({ color: 0xafc0ca });
-    var hollowCylinder1 = intersectionBSP1.toMesh(redMaterial);
-    var hollowCylinder2 = hollowCylinder1.clone();
-
-    hollowCylinder1.position.set(ref_y - distBioReactor, 100, -100);
-    hollowCylinder2.position.set(ref_y - distBioReactor, 100, 100);
-    hollowCylinder2.rotation.y = Math.PI;
-
-    scene.add(hollowCylinder1);
-    scene.add(hollowCylinder2);
+    // // 创建 Water 对象所需的选项
+    // const waterOptions = {
+    // color: '#abcdef', // 水体颜色
+    // scale: 4, // 波浪大小
+    // flowDirection: new THREE.Vector2(1, 1), // 水流方向
+    // textureWidth: 1024, // 纹理宽度
+    // textureHeight: 1024, // 纹理高度
+    // // 水面的法线贴图。其作用是用于模拟水面波浪之间的交互以及光照效果，增加水面的真实感。
+    // //   normalMap0: normalTexture, 
+    // //   // 法线贴图是一种让表面产生凹凸感觉的纹理，用以增加真实感
+    // //   normalMapUrl0: "./node_modules/ThreeJs/images/test.jpg",
+    // //   // 这里也可以直接将贴图赋值给 normalMap0
+    // //   envMap: cubeRenderTarget.texture, // 反射天空盒的立方体纹理
+    // receiveShadow: true, // 是否接收阴影
+    // distortionScale: 3.7, // 扭曲效果的大小
+    // fog: scene.fog !== undefined // 是否启用雾效果 
+    // };
+    // const water = new THREE.Water(waterGeometry, waterOptions);
+    // scene.add(water);
+    var water = new Water(
+        waterGeometry,
+        {
+            textureWidth: 512,
+            textureHeight: 512,
+            waterNormals: new THREE.TextureLoader().load('textures/waternormals.jpg', function ( texture ) {
+                texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+            } ),
+            sunDirection: new THREE.Vector3(),
+            sunColor: 0xffffff,
+            waterColor: 0x001e0f,
+            distortionScale: 3.7,
+            fog: scene.fog !== undefined
+        }
+    );
+    
 }
-
-// function loadShader(fliename, onLoadShader) {  // 异步加载外部文件
-// 	var request = new XMLHttpRequest();
-// 	request.onreadystatechange = function () {
-// 		if (request.readyState === 4 && request.status === 200) {
-// 			onLoadShader(request.responseText);
-// 		}
-// 	};
-// 	request.open("GET", fliename, true);
-// 	request.send();
-// }
 
 function createBubble(x, y, z) {
-    var radiusSeg = 32;
-    var heightSeg = 1;
-    var cylinderGeometry = new THREE.CylinderGeometry(10, 10, 100, radiusSeg, heightSeg);
-    var material = new THREE.MeshLambertMaterial({ color: 0xafc0ca });
-    var cylinderMesh = new THREE.Mesh(cylinderGeometry, material);
-    var numSamples = 2000;
-    var sampler = new MeshSurfaceSampler(cylinderMesh).build();  // 创建采样器
-    var vertices = [];
+    var cylinderGeometry = new THREE.CylinderGeometry(10, 10, 100, 32, 1);  // 创建圆柱对象
+    var material = new THREE.MeshLambertMaterial({ color: 0xffffff });
+    var cylinderMesh = new THREE.Mesh(cylinderGeometry, material);  // 创建网格对象
+    var numSamples = 2000;  // 采样点个数
+    var sampler = new MeshSurfaceSampler(cylinderMesh).build();  // 创建采样器，信息由圆柱网格对象提供
+    var vertices = [];  // 创建微粒列表
     var tempPosition = new THREE.Vector3();
-
-
-    // loadShader('./glsl/vertexShader.glsl', function (vsContent) {
-    // 	vs = vsContent;
-    // });
-    // loadShader('./glsl/fragmentShader.glsl', function (fsContent) {
-    // 	fs = fsContent;
-    // });
-
-
-    for (let i = 0; i < 800; i++) {
+    loadShader('../glsl/vertexShader.glsl', function (vsContent) {
+    	vs = vsContent;
+    });
+    loadShader('../glsl/fragmentShader.glsl', function (fsContent) {
+    	fs = fsContent;
+    });
+    for (let i = 0; i < numSamples; i++) {
         sampler.sample(tempPosition);
         vertices.push(tempPosition.x, tempPosition.y, tempPosition.z);
     }
+    const pIndexs = kokomi.makeBuffer(sampledPos.length / 3, (v, k) => v);
     var pointsGemometry = new THREE.BufferGeometry();
     pointsGemometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
-
-    // 直接创建微粒对象
-    // var pointsMaterial = new THREE.PointsMaterial({
-    // 	color:0xff61d5,
-    // 	size:0.03
-    // })
-
-    // 通过着色器渲染微粒对象
+    pointsGemometry.setAttribute("pIndex", new THREE.BufferAttribute(pIndexs, 1));
     // var pointsMaterial = new THREE.ShaderMaterial({
     //     vertexShader: `
     //         // 顶点着色器传入微粒大小
@@ -219,13 +204,70 @@ function createBubble(x, y, z) {
     //         attribute float pIndex;
     //         varying float vOpacity;
     //         varying vec3 vPosition;
+            
+    //         // //	Classic Perlin 3D Noise - 经典的柏林3D噪音
+    //         // //	by Stefan Gustavson
+    //         // //
+    //         // vec4 permute(vec4 x){return mod(((x*34.0)+1.0)*x, 289.0);}
+    //         // vec3 fade(vec3 t) {return t*t*t*(t*(t*6.0-15.0)+10.0);}
 
+    //         // //	Classic Perlin 2D Noise  - 经典的柏林2D噪音
+    //         // //	by Stefan Gustavson
+    //         // //
+    //         // vec2 fade(vec2 t) {return t*t*t*(t*(t*6.0-15.0)+10.0);}
+
+    //         // float cnoise(vec2 P){
+    //         //     vec4 Pi = floor(P.xyxy) + vec4(0.0, 0.0, 1.0, 1.0);
+    //         //     vec4 Pf = fract(P.xyxy) - vec4(0.0, 0.0, 1.0, 1.0);
+    //         //     Pi = mod(Pi, 289.0); // To avoid truncation effects in permutation
+    //         //     vec4 ix = Pi.xzxz;
+    //         //     vec4 iy = Pi.yyww;
+    //         //     vec4 fx = Pf.xzxz;
+    //         //     vec4 fy = Pf.yyww;
+    //         //     vec4 i = permute(permute(ix) + iy);
+    //         //     vec4 gx = 2.0 * fract(i * 0.0243902439) - 1.0; // 1/41 = 0.024...
+    //         //     vec4 gy = abs(gx) - 0.5;
+    //         //     vec4 tx = floor(gx + 0.5);
+    //         //     gx = gx - tx;
+    //         //     vec2 g00 = vec2(gx.x,gy.x);
+    //         //     vec2 g10 = vec2(gx.y,gy.y);
+    //         //     vec2 g01 = vec2(gx.z,gy.z);
+    //         //     vec2 g11 = vec2(gx.w,gy.w);
+    //         //     vec4 norm = 1.79284291400159 - 0.85373472095314 * 
+    //         //         vec4(dot(g00, g00), dot(g01, g01), dot(g10, g10), dot(g11, g11));
+    //         //     g00 *= norm.x;
+    //         //     g01 *= norm.y;
+    //         //     g10 *= norm.z;
+    //         //     g11 *= norm.w;
+    //         //     float n00 = dot(g00, vec2(fx.x, fy.x));
+    //         //     float n10 = dot(g10, vec2(fx.y, fy.y));
+    //         //     float n01 = dot(g01, vec2(fx.z, fy.z));
+    //         //     float n11 = dot(g11, vec2(fx.w, fy.w));
+    //         //     vec2 fade_xy = fade(Pf.xy);
+    //         //     vec2 n_x = mix(vec2(n00, n01), vec2(n10, n11), fade_xy.x);
+    //         //     float n_xy = mix(n_x.x, n_x.y, fade_xy.y);
+    //         //     return 2.3 * n_xy;
+    //         // }
+
+    //         // 添加随机函数
+    //         float random(float n){
+    //             return fract(sin(n)*43758.5453123);
+    //         }
+    //         // 添加畸变函数
+    //         vec3 distort(vec3 p){
+    //             float t=iTime*.25;
+    //             float rndz=(random(pIndex));
+    //             p.y+=fract((t+rndz)*.5);
+    //             return p;
+    //         }
     //         void main(){
     //             vec3 p=position;
+    //             p=distort(p);
     //             gl_Position=projectionMatrix*modelViewMatrix*vec4(p,1.);
-                
     //             vUv=uv;
     //             gl_PointSize=uPointSize;
+    //             vOpacity=random(pIndex);
+    //             vPosition=p;
     //         }
     //     `,
     //     fragmentShader: `
@@ -240,11 +282,16 @@ function createBubble(x, y, z) {
 
     //         varying float vOpacity;
     //         varying vec3 vPosition;
-            
+    //         float saturate(float a){
+    //             return clamp(a,0.,1.);
+    //         }
     //         void main(){
     //             vec2 p=gl_PointCoord;
     //             vec3 col=uColor;
     //             // float shape=spot(p,0.1,2.5);
+    //             // float alpha=1.-saturate(abs(vPosition.y*1.2));
+    //             col*=vOpacity;
+    //             // shape*=alpha;
     //             gl_FragColor=vec4(col,1);
     //         }
     //     `,
@@ -256,9 +303,9 @@ function createBubble(x, y, z) {
     var points = new THREE.Points(pointsGemometry, pointsMaterial);
 
     var group = new THREE.Group();
-    // group.add(points);
-    // group.position.y = 300;
-    // scene.add(group);
+    group.add(points);
+    group.position.y = 300;
+    scene.add(group);
 }
 
 function createRefluxBump() {
@@ -302,6 +349,60 @@ function createFans(x1, y1, z1, x2, y2, z2) {
 
     );
 }
+
+function createWave(){
+    function radialWave(u, v, position) {
+        // 把面按一个方向积分就是立体
+        
+        // const r = 20;
+        // const x = Math.sin(u) * r+2;
+        // const z = (Math.sin(u * 4 * Math.PI) + Math.cos(v * 2 * Math.PI)) * 1.8;
+        // const y = Math.sin(v / 2) * 2 * r;
+        // position.set(x, y, z);
+        // return new THREE.Vector3(x, y, z);
+
+        u *= Math.PI;
+        v *= 2 * Math.PI;
+
+        u = u * 5;
+        let x, y, z;
+        x = u;
+        z = v+v;
+        // if (u < Math.PI) {
+        //     x =
+        //     3 * Math.cos(u) * (1 + Math.sin(u)) +
+        //     2 * (1 - Math.cos(u) / 2) * Math.cos(u) * Math.cos(v);
+        //     z =
+        //     -8 * Math.sin(u) -
+        //     2 * (1 - Math.cos(u) / 2) * Math.sin(u) * Math.cos(v);
+        // } 
+        // else {
+        //     x =
+        //     3 * Math.cos(u) * (1 + Math.sin(u)) +
+        //     2 * (1 - Math.cos(2*u) / 2) * Math.cos(v + Math.PI);
+        //     z = -8 * Math.sin(u);
+        // }
+
+        y = 10;
+        position.set(x, y, z);
+        return new THREE.Vector3(x, y, z);
+    }
+    //const geom = new THREE.ParametricGeometry(function, slices, stacks[,useTris])
+    const geom = new ParametricGeometry(radialWave, 120, 160);
+    
+    // 创建材质
+    const meshMaterial = new THREE.MeshPhongMaterial({
+        color: 0x3399ff
+    })
+    meshMaterial.side = THREE.DoubleSide
+    // 创建网格对象
+    var mesh = new THREE.Mesh(geom, meshMaterial)
+    mesh.scale.set(30,30,30)
+    mesh.position.set(0, 0, 0)
+    // 网格对象添加到场景中
+    scene.add(mesh)
+}
+
 function initContent() {
     createFloor();
     // 创建污水处理容器
@@ -331,30 +432,33 @@ function initContent() {
     p5 = createPlate(40, new THREE.MeshPhongMaterial({ color: 0xffc0ca }), ref_y - 300, 0, widthWall / 2 - 50, "曝气盘5");
     p6 = createPlate(40, new THREE.MeshPhongMaterial({ color: 0xffc0ca }), ref_y - 100, 0, widthWall / 2 - 50, "曝气盘6");
 
-    createStone(stoneRadius, stoneHeight, new THREE.MeshPhongMaterial({ color: 0xadff2f }), ref_y - 350, stone2floor, -widthWall / 4 + 20, "曝气石1");
-    createStone(stoneRadius, stoneHeight, new THREE.MeshPhongMaterial({ color: 0xadff2f }), ref_y - 240, stone2floor, -widthWall / 4 + 20, "曝气石2");
-    createStone(stoneRadius, stoneHeight, new THREE.MeshPhongMaterial({ color: 0xadff2f }), ref_y - 160, stone2floor, -widthWall / 4 + 20, "曝气石3");
-    createStone(stoneRadius, stoneHeight, new THREE.MeshPhongMaterial({ color: 0xadff2f }), ref_y - 50, stone2floor, -widthWall / 4 + 20, "曝气石4");
-    createStone(stoneRadius, stoneHeight, new THREE.MeshPhongMaterial({ color: 0xadff2f }), ref_y - 350, stone2floor, widthWall / 4 - 20, "曝气石5");
-    createStone(stoneRadius, stoneHeight, new THREE.MeshPhongMaterial({ color: 0xadff2f }), ref_y - 240, stone2floor, widthWall / 4 - 20, "曝气石6");
-    createStone(stoneRadius, stoneHeight, new THREE.MeshPhongMaterial({ color: 0xadff2f }), ref_y - 160, stone2floor, widthWall / 4 - 20, "曝气石7");
-    createStone(stoneRadius, stoneHeight, new THREE.MeshPhongMaterial({ color: 0xadff2f }), ref_y - 50, stone2floor, widthWall / 4 - 20, "曝气石8");
-
+    stone1 = createStone(stoneRadius, stoneHeight, new THREE.MeshPhongMaterial({ color: 0x778899 }), ref_y - 350, stone2floor, -widthWall / 4 + 20, "曝气石1");
+    stone2 = createStone(stoneRadius, stoneHeight, new THREE.MeshPhongMaterial({ color: 0x778899 }), ref_y - 240, stone2floor, -widthWall / 4 + 20, "曝气石2");
+    stone3 = createStone(stoneRadius, stoneHeight, new THREE.MeshPhongMaterial({ color: 0x778899 }), ref_y - 160, stone2floor, -widthWall / 4 + 20, "曝气石3");
+    stone4 = createStone(stoneRadius, stoneHeight, new THREE.MeshPhongMaterial({ color: 0x778899 }), ref_y - 50, stone2floor, -widthWall / 4 + 20, "曝气石4");
+    stone5 = createStone(stoneRadius, stoneHeight, new THREE.MeshPhongMaterial({ color: 0x778899 }), ref_y - 350, stone2floor, widthWall / 4 - 20, "曝气石5");
+    stone6 = createStone(stoneRadius, stoneHeight, new THREE.MeshPhongMaterial({ color: 0x778899 }), ref_y - 240, stone2floor, widthWall / 4 - 20, "曝气石6");
+    stone7 = createStone(stoneRadius, stoneHeight, new THREE.MeshPhongMaterial({ color: 0x778899 }), ref_y - 160, stone2floor, widthWall / 4 - 20, "曝气石7");
+    stone8 = createStone(stoneRadius, stoneHeight, new THREE.MeshPhongMaterial({ color: 0x778899 }), ref_y - 50, stone2floor, widthWall / 4 - 20, "曝气石8");
 
     // 创建气泡效果，首先以一个圆柱为例
     // createBubble();
 
     // 创建桨叶及电线
-    createFans(-distFan, heightWall - axisLengthFan1, 100, -distFan, heightWall - axisLengthFan2, -100);
+    createFans(-distFan, heightWall - axisLengthFan1, -100, -distFan, heightWall - axisLengthFan2, 100);
 
     // 创建顶部管道
     createToptube();
 
     // 创建气泵
-    createRefluxBump()
+    createRefluxBump();
 
     // 创建传感器
 
+    // 创建水
+    // createWater();
+
+    createWave();
 }
 // 初始化轨迹球控件
 function initControls() {
@@ -394,6 +498,41 @@ function animate() {
         fan1.rotation.z += fan_base_v * sf1 * 0.5;
         fan2.rotation.z += fan_base_v * sf2 * 0.5;
     }
+
+    if (ssg1){
+        stone1.material.color.set(0x55ff55);
+        stone2.material.color.set(0x55ff55);
+    }
+    else{
+        stone1.material.color.set(0x778899);
+        stone2.material.color.set(0x778899);
+    }
+    if (ssg2){
+        stone3.material.color.set(0x55ff55);
+        stone4.material.color.set(0x55ff55);
+    }
+    else{
+        stone3.material.color.set(0x778899);
+        stone4.material.color.set(0x778899);
+    }
+    if (ssg3){
+        stone5.material.color.set(0x55ff55);
+        stone6.material.color.set(0x55ff55);
+    }
+    else{
+        stone5.material.color.set(0x778899);
+        stone6.material.color.set(0x778899);
+    }
+    if (ssg4){
+        stone7.material.color.set(0x55ff55);
+        stone8.material.color.set(0x55ff55);
+    }
+    else{
+        stone7.material.color.set(0x778899);
+        stone8.material.color.set(0x778899);
+    }
+
+
     if (sb1)
         p1.material.color.set(0xff0000);
     else

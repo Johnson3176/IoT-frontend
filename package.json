@@ -29,6 +29,7 @@
     "@huaweicloud/huaweicloud-sdk-vpc": "^3.1.35",
     "dat.gui": "^0.7.9",
     "es6-promise": "^4.2.8",
+    "kokomi.js": "^1.9.78",
     "module": "^1.2.5",
     "require.js": "^1.0.0",
     "stats.js": "^0.17.0",

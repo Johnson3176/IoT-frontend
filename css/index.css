@@ -209,32 +209,6 @@ p {
 }
 
 
-
-/* 
-.screen-wrapper {
-    height: 100vh;
-    width: 100vw;
-    background-color: #F3F5FF;
-
-}
-.wheat{
-    background-color: wheat;
-}
-.screen {
-    display: inline-block;
-    width: 1920px;
-    height: 1024px;
-    height: 100vh;
-    width: 100vw;
-    background: #e6f1e6;
-    transform-origin: 0 0;
-    position: absolute;
-    left: 50%;
-    margin: 0 auto;
-    justify-content: center;
-} */
-
-
 .buttons {
 
     background-color: #1E90FF;
