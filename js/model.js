@@ -55,7 +55,7 @@ function initRenderer() {
 function createFloor() {
     // 建立地面几何对象
     var loader = new THREE.TextureLoader();  // 创建地面加载对象
-    loader.load("./ThreeJs/images/floor-sharp.jpg", function (texture) {
+    loader.load("./images/floor-sharp.jpg", function (texture) {
         texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
         texture.repeat.set(10, 10);
         var floorGeometry = new THREE.BoxGeometry(1800, 1000, 2);  // 很薄的一张地面
@@ -142,7 +142,7 @@ function createWater(){
     // // 水面的法线贴图。其作用是用于模拟水面波浪之间的交互以及光照效果，增加水面的真实感。
     // //   normalMap0: normalTexture, 
     // //   // 法线贴图是一种让表面产生凹凸感觉的纹理，用以增加真实感
-    // //   normalMapUrl0: "./node_modules/ThreeJs/images/test.jpg",
+    // //   normalMapUrl0: "./images/test.jpg",
     // //   // 这里也可以直接将贴图赋值给 normalMap0
     // //   envMap: cubeRenderTarget.texture, // 反射天空盒的立方体纹理
     // receiveShadow: true, // 是否接收阴影
@@ -170,144 +170,321 @@ function createWater(){
 }
 
 function createBubble(x, y, z) {
-    var cylinderGeometry = new THREE.CylinderGeometry(10, 10, 100, 32, 1);  // 创建圆柱对象
-    var material = new THREE.MeshLambertMaterial({ color: 0xffffff });
-    var cylinderMesh = new THREE.Mesh(cylinderGeometry, material);  // 创建网格对象
-    var numSamples = 2000;  // 采样点个数
-    var sampler = new MeshSurfaceSampler(cylinderMesh).build();  // 创建采样器，信息由圆柱网格对象提供
-    var vertices = [];  // 创建微粒列表
-    var tempPosition = new THREE.Vector3();
-    loadShader('../glsl/vertexShader.glsl', function (vsContent) {
-    	vs = vsContent;
-    });
-    loadShader('../glsl/fragmentShader.glsl', function (fsContent) {
-    	fs = fsContent;
-    });
-    for (let i = 0; i < numSamples; i++) {
-        sampler.sample(tempPosition);
-        vertices.push(tempPosition.x, tempPosition.y, tempPosition.z);
-    }
-    const pIndexs = kokomi.makeBuffer(sampledPos.length / 3, (v, k) => v);
-    var pointsGemometry = new THREE.BufferGeometry();
-    pointsGemometry.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
-    pointsGemometry.setAttribute("pIndex", new THREE.BufferAttribute(pIndexs, 1));
-    // var pointsMaterial = new THREE.ShaderMaterial({
-    //     vertexShader: `
-    //         // 顶点着色器传入微粒大小
-    //         uniform float iTime;
-    //         uniform vec2 iResolution;
-    //         uniform vec2 iMouse;
-
-    //         varying vec2 vUv;
-    //         uniform float uPointSize;
-
-    //         attribute float pIndex;
-    //         varying float vOpacity;
-    //         varying vec3 vPosition;
-            
-    //         // //	Classic Perlin 3D Noise - 经典的柏林3D噪音
-    //         // //	by Stefan Gustavson
-    //         // //
-    //         // vec4 permute(vec4 x){return mod(((x*34.0)+1.0)*x, 289.0);}
-    //         // vec3 fade(vec3 t) {return t*t*t*(t*(t*6.0-15.0)+10.0);}
-
-    //         // //	Classic Perlin 2D Noise  - 经典的柏林2D噪音
-    //         // //	by Stefan Gustavson
-    //         // //
-    //         // vec2 fade(vec2 t) {return t*t*t*(t*(t*6.0-15.0)+10.0);}
-
-    //         // float cnoise(vec2 P){
-    //         //     vec4 Pi = floor(P.xyxy) + vec4(0.0, 0.0, 1.0, 1.0);
-    //         //     vec4 Pf = fract(P.xyxy) - vec4(0.0, 0.0, 1.0, 1.0);
-    //         //     Pi = mod(Pi, 289.0); // To avoid truncation effects in permutation
-    //         //     vec4 ix = Pi.xzxz;
-    //         //     vec4 iy = Pi.yyww;
-    //         //     vec4 fx = Pf.xzxz;
-    //         //     vec4 fy = Pf.yyww;
-    //         //     vec4 i = permute(permute(ix) + iy);
-    //         //     vec4 gx = 2.0 * fract(i * 0.0243902439) - 1.0; // 1/41 = 0.024...
-    //         //     vec4 gy = abs(gx) - 0.5;
-    //         //     vec4 tx = floor(gx + 0.5);
-    //         //     gx = gx - tx;
-    //         //     vec2 g00 = vec2(gx.x,gy.x);
-    //         //     vec2 g10 = vec2(gx.y,gy.y);
-    //         //     vec2 g01 = vec2(gx.z,gy.z);
-    //         //     vec2 g11 = vec2(gx.w,gy.w);
-    //         //     vec4 norm = 1.79284291400159 - 0.85373472095314 * 
-    //         //         vec4(dot(g00, g00), dot(g01, g01), dot(g10, g10), dot(g11, g11));
-    //         //     g00 *= norm.x;
-    //         //     g01 *= norm.y;
-    //         //     g10 *= norm.z;
-    //         //     g11 *= norm.w;
-    //         //     float n00 = dot(g00, vec2(fx.x, fy.x));
-    //         //     float n10 = dot(g10, vec2(fx.y, fy.y));
-    //         //     float n01 = dot(g01, vec2(fx.z, fy.z));
-    //         //     float n11 = dot(g11, vec2(fx.w, fy.w));
-    //         //     vec2 fade_xy = fade(Pf.xy);
-    //         //     vec2 n_x = mix(vec2(n00, n01), vec2(n10, n11), fade_xy.x);
-    //         //     float n_xy = mix(n_x.x, n_x.y, fade_xy.y);
-    //         //     return 2.3 * n_xy;
-    //         // }
-
-    //         // 添加随机函数
-    //         float random(float n){
-    //             return fract(sin(n)*43758.5453123);
+    
+    // const joinLine = (arr) => arr.join("\n");
+    // 
+    // const sketchCreator = `
+    //   const createSketch = () => {
+    //     const sketch = new Sketch();
+    //     sketch.create();
+  
+    //     sketch.record = () => {
+    //       let capturer = new CCapture({
+    //         format: "gif",
+    //         workersPath: "../../vendors/",
+    //       });
+    //       let isRecording = false;
+    //       window.addEventListener("keydown", (e) => {
+    //         if (e.key === " ") {
+    //           if (!isRecording) {
+    //             capturer.start();
+    //             isRecording = true;
+    //           } else {
+    //             capturer.stop();
+    //             isRecording = false;
+    //             capturer.save();
+    //           }
     //         }
-    //         // 添加畸变函数
-    //         vec3 distort(vec3 p){
-    //             float t=iTime*.25;
-    //             float rndz=(random(pIndex));
-    //             p.y+=fract((t+rndz)*.5);
-    //             return p;
+    //       });
+  
+    //       sketch.update(() => {
+    //         if (isRecording) {
+    //           if (sketch.composer){
+    //             sketch.composer.render(sketch.scene, sketch.camera);
+    //           } else {
+    //             sketch.renderer.render(sketch.scene, sketch.camera);
+    //           }
+    //           capturer.capture(sketch.renderer.domElement);
     //         }
-    //         void main(){
-    //             vec3 p=position;
-    //             p=distort(p);
-    //             gl_Position=projectionMatrix*modelViewMatrix*vec4(p,1.);
-    //             vUv=uv;
-    //             gl_PointSize=uPointSize;
-    //             vOpacity=random(pIndex);
-    //             vPosition=p;
-    //         }
-    //     `,
-    //     fragmentShader: `
-    //         // 片元着色器传入微粒颜色
-    //         uniform float iTime;
-    //         uniform vec2 iResolution;
-    //         uniform vec2 iMouse;
-
-    //         varying vec2 vUv;
-
-    //         uniform vec3 uColor;
-
-    //         varying float vOpacity;
-    //         varying vec3 vPosition;
-    //         float saturate(float a){
-    //             return clamp(a,0.,1.);
-    //         }
-    //         void main(){
-    //             vec2 p=gl_PointCoord;
-    //             vec3 col=uColor;
-    //             // float shape=spot(p,0.1,2.5);
-    //             // float alpha=1.-saturate(abs(vPosition.y*1.2));
-    //             col*=vOpacity;
-    //             // shape*=alpha;
-    //             gl_FragColor=vec4(col,1);
-    //         }
-    //     `,
-    //     uniforms: {
-    //         uColor: { value: new THREE.Color("#fffafa"), },
-    //         uPointSize: { value: 4, },
+    //       });
     //     }
-    // });
-    var points = new THREE.Points(pointsGemometry, pointsMaterial);
+  
+    //     sketch.record();
+  
+    //     return sketch;
+    //   };
+  
+    //   const sketch = createSketch();
+    //   `
+    const vertexShader = `
+        uniform float iTime;
+        uniform vec2 iResolution;
+        uniform vec2 iMouse;
+        
+        uniform float uDistortion;
+        uniform float uRadius;
+        uniform float uVelocity;
+        varying vec2 vUv;
+        //
+        // Description : Array and textureless GLSL 2D/3D/4D simplex
+        //               noise functions.
+        //      Author : Ian McEwan, Ashima Arts.
+        //  Maintainer : ijm
+        //     Lastmod : 20110822 (ijm)
+        //     License : Copyright (C) 2011 Ashima Arts. All rights reserved.
+        //               Distributed under the MIT License. See LICENSE file.
+        //               https://github.com/ashima/webgl-noise
+        //
+        
+        vec3 mod289(vec3 x){
+            return x-floor(x*(1./289.))*289.;
+        }
+        
+        vec4 mod289(vec4 x){
+            return x-floor(x*(1./289.))*289.;
+        }
+        
+        vec4 permute(vec4 x){
+            return mod289(((x*34.)+1.)*x);
+        }
+        
+        vec4 taylorInvSqrt(vec4 r)
+        {
+            return 1.79284291400159-.85373472095314*r;
+        }
+        
+        float snoise(vec3 v)
+        {
+            const vec2 C=vec2(1./6.,1./3.);
+            const vec4 D=vec4(0.,.5,1.,2.);
+            
+            // First corner
+            vec3 i=floor(v+dot(v,C.yyy));
+            vec3 x0=v-i+dot(i,C.xxx);
+            
+            // Other corners
+            vec3 g=step(x0.yzx,x0.xyz);
+            vec3 l=1.-g;
+            vec3 i1=min(g.xyz,l.zxy);
+            vec3 i2=max(g.xyz,l.zxy);
+            
+            //   x0 = x0 - 0.0 + 0.0 * C.xxx;
+            //   x1 = x0 - i1  + 1.0 * C.xxx;
+            //   x2 = x0 - i2  + 2.0 * C.xxx;
+            //   x3 = x0 - 1.0 + 3.0 * C.xxx;
+            vec3 x1=x0-i1+C.xxx;
+            vec3 x2=x0-i2+C.yyy;// 2.0*C.x = 1/3 = C.y
+            vec3 x3=x0-D.yyy;// -1.0+3.0*C.x = -0.5 = -D.y
+            
+            // Permutations
+            i=mod289(i);
+            vec4 p=permute(permute(permute(
+                i.z+vec4(0.,i1.z,i2.z,1.))
+                +i.y+vec4(0.,i1.y,i2.y,1.))
+                +i.x+vec4(0.,i1.x,i2.x,1.));
+            
+            // Gradients: 7x7 points over a square, mapped onto an octahedron.
+            // The ring size 17*17 = 289 is close to a multiple of 49 (49*6 = 294)
+            float n_=.142857142857;// 1.0/7.0
+            vec3 ns=n_*D.wyz-D.xzx;
+            
+            vec4 j=p-49.*floor(p*ns.z*ns.z);//  mod(p,7*7)
+            
+            vec4 x_=floor(j*ns.z);
+            vec4 y_=floor(j-7.*x_);// mod(j,N)
+            
+            vec4 x=x_*ns.x+ns.yyyy;
+            vec4 y=y_*ns.x+ns.yyyy;
+            vec4 h=1.-abs(x)-abs(y);
+            
+            vec4 b0=vec4(x.xy,y.xy);
+            vec4 b1=vec4(x.zw,y.zw);
+            
+            //vec4 s0 = vec4(lessThan(b0,0.0))*2.0 - 1.0;
+            //vec4 s1 = vec4(lessThan(b1,0.0))*2.0 - 1.0;
+            vec4 s0=floor(b0)*2.+1.;
+            vec4 s1=floor(b1)*2.+1.;
+            vec4 sh=-step(h,vec4(0.));
+            
+            vec4 a0=b0.xzyw+s0.xzyw*sh.xxyy;
+            vec4 a1=b1.xzyw+s1.xzyw*sh.zzww;
+            
+            vec3 p0=vec3(a0.xy,h.x);
+            vec3 p1=vec3(a0.zw,h.y);
+            vec3 p2=vec3(a1.xy,h.z);
+            vec3 p3=vec3(a1.zw,h.w);
+            
+            //Normalise gradients
+            vec4 norm=taylorInvSqrt(vec4(dot(p0,p0),dot(p1,p1),dot(p2,p2),dot(p3,p3)));
+            p0*=norm.x;
+            p1*=norm.y;
+            p2*=norm.z;
+            p3*=norm.w;
+            
+            // Mix final noise value
+            vec4 m=max(.6-vec4(dot(x0,x0),dot(x1,x1),dot(x2,x2),dot(x3,x3)),0.);
+            m=m*m;
+            return 42.*dot(m*m,vec4(dot(p0,x0),dot(p1,x1),
+            dot(p2,x2),dot(p3,x3)));
+        }
 
-    var group = new THREE.Group();
-    group.add(points);
-    group.position.y = 300;
-    scene.add(group);
+        vec3 distort(vec3 p){
+            float noise=snoise(vec3(p/2.+iTime*uVelocity));
+            p*=(noise*pow(uDistortion,2.)+uRadius);
+            return p;
+        }
+        
+        void main(){
+            vec3 p=position;
+            
+            vec3 dp=distort(p);
+            
+            csm_Position=dp;
+            
+            vUv=uv;
+        }
+    `
+    const fragmentShader = `
+        uniform float iTime;
+        uniform vec2 iResolution;
+        uniform vec2 iMouse;
+        
+        uniform vec3 uColor;
+        varying vec2 vUv;
+        void main(){
+            vec2 p=vUv;
+            
+            vec3 col=uColor;
+            
+            csm_DiffuseColor=vec4(col,1.);
+        }
+    `;
+    class Sketch extends kokomi.Base {
+        create() {
+            const envMap = new THREE.CubeTextureLoader().load([
+                // "https://s2.loli.net/2022/09/29/GqseLg6tWoluDzV.png",
+                "./images/bubble_texture.png",
+                "./images/bubble_texture.png",
+                "./images/bubble_texture.png",
+                "./images/bubble_texture.png",
+                "./images/bubble_texture.png",
+                "./images/bubble_texture.png",
+            ]);
+            const bumpMap = new THREE.TextureLoader().load(
+                "./images/bubble_bottom.jpg",
+            );
+            // bubble
+            const cm = new kokomi.CustomMesh(this, {
+            baseMaterial: new THREE.MeshPhysicalMaterial(),
+            geometry: new THREE.IcosahedronGeometry(1, 4),
+            vertexShader,
+            fragmentShader,
+            materialParams: {
+                side: THREE.DoubleSide,
+                roughness: 0,
+                metalness: 1,
+                clearcoat: 1,
+                clearcoatRoughness: 1,
+                bumpScale: 0.005,
+                envMap,
+                bumpMap,
+            },
+            uniforms: {
+                uDistortion: {
+                value: 0.4,
+                },
+                uRadius: {
+                value: 1,
+                },
+                uVelocity: {
+                value: 0.5,
+                },
+                uColor: {
+                value: new THREE.Color("#ffffff"),
+                },
+            },
+            });
+            cm.addExisting();
+            // bubbles
+            const count = 64;
+    
+            const bubbles = [...Array(count).keys()].map(() => {
+            const bubble = cm.mesh.clone();
+            bubble.position.x = 4 * THREE.MathUtils.randFloat(-6, 6);
+            bubble.position.y = 4 * THREE.MathUtils.randFloat(-5, 5);
+            bubble.position.z = 4 * THREE.MathUtils.randFloat(-5, -1);
+            const bubbleScale = THREE.MathUtils.randFloat(0, 1.5);
+            bubble.scale.setScalar(bubbleScale);
+            this.scene.add(bubble);
+            return bubble;
+            });
+            // anime
+            this.update(() => {
+                const t = this.clock.elapsedTime;
+                const mp = this.interactionManager.mouse;
+    
+                cm.mesh.rotation.z = t / 5;
+                cm.mesh.rotation.x = THREE.MathUtils.lerp(
+                cm.mesh.rotation.x,
+                mp.y * Math.PI,
+                0.1
+                );
+                cm.mesh.rotation.y = THREE.MathUtils.lerp(
+                cm.mesh.rotation.y,
+                mp.x * Math.PI,
+                0.1
+                );
+                bubbles.forEach((bubble) => {
+                bubble.position.y += THREE.MathUtils.randFloat(0.02, 0.06);
+                if (bubble.position.y > 20) {
+                    bubble.position.y = -20;
+                }
+                bubble.rotation.x += 0.04;
+                bubble.rotation.y += 0.04;
+                bubble.rotation.z += 0.02;
+                });
+            });
+        }
+    }
+    const createSketch = () => {
+        const sketch = new Sketch();
+        sketch.create();
+  
+        sketch.record = () => {
+          let capturer = new CCapture({
+            format: "gif",
+            workersPath: "../../vendors/",
+          });
+          let isRecording = false;
+          window.addEventListener("keydown", (e) => {
+            if (e.key === " ") {
+              if (!isRecording) {
+                capturer.start();
+                isRecording = true;
+              } else {
+                capturer.stop();
+                isRecording = false;
+                capturer.save();
+              }
+            }
+          });
+  
+          sketch.update(() => {
+            if (isRecording) {
+              if (sketch.composer){
+                sketch.composer.render(sketch.scene, sketch.camera);
+              } else {
+                sketch.renderer.render(sketch.scene, sketch.camera);
+              }
+              capturer.capture(sketch.renderer.domElement);
+            }
+          });
+        }
+        sketch.record();
+        return sketch;
+      };
+    const sketch = createSketch();
 }
-
 function createRefluxBump() {
     // 0x6aebf9
     // #908E91
@@ -346,62 +523,9 @@ function createFans(x1, y1, z1, x2, y2, z2) {
         },
         (xhr) => { console.log((xhr.loaded / xhr.total) * 100 + '% loaded'); },
         (error) => { console.error('Failed to load model', error); }
-
     );
 }
 
-function createWave(){
-    function radialWave(u, v, position) {
-        // 把面按一个方向积分就是立体
-        
-        // const r = 20;
-        // const x = Math.sin(u) * r+2;
-        // const z = (Math.sin(u * 4 * Math.PI) + Math.cos(v * 2 * Math.PI)) * 1.8;
-        // const y = Math.sin(v / 2) * 2 * r;
-        // position.set(x, y, z);
-        // return new THREE.Vector3(x, y, z);
-
-        u *= Math.PI;
-        v *= 2 * Math.PI;
-
-        u = u * 5;
-        let x, y, z;
-        x = u;
-        z = v+v;
-        // if (u < Math.PI) {
-        //     x =
-        //     3 * Math.cos(u) * (1 + Math.sin(u)) +
-        //     2 * (1 - Math.cos(u) / 2) * Math.cos(u) * Math.cos(v);
-        //     z =
-        //     -8 * Math.sin(u) -
-        //     2 * (1 - Math.cos(u) / 2) * Math.sin(u) * Math.cos(v);
-        // } 
-        // else {
-        //     x =
-        //     3 * Math.cos(u) * (1 + Math.sin(u)) +
-        //     2 * (1 - Math.cos(2*u) / 2) * Math.cos(v + Math.PI);
-        //     z = -8 * Math.sin(u);
-        // }
-
-        y = 10;
-        position.set(x, y, z);
-        return new THREE.Vector3(x, y, z);
-    }
-    //const geom = new THREE.ParametricGeometry(function, slices, stacks[,useTris])
-    const geom = new ParametricGeometry(radialWave, 120, 160);
-    
-    // 创建材质
-    const meshMaterial = new THREE.MeshPhongMaterial({
-        color: 0x3399ff
-    })
-    meshMaterial.side = THREE.DoubleSide
-    // 创建网格对象
-    var mesh = new THREE.Mesh(geom, meshMaterial)
-    mesh.scale.set(30,30,30)
-    mesh.position.set(0, 0, 0)
-    // 网格对象添加到场景中
-    scene.add(mesh)
-}
 
 function initContent() {
     createFloor();
@@ -442,7 +566,7 @@ function initContent() {
     stone8 = createStone(stoneRadius, stoneHeight, new THREE.MeshPhongMaterial({ color: 0x778899 }), ref_y - 50, stone2floor, widthWall / 4 - 20, "曝气石8");
 
     // 创建气泡效果，首先以一个圆柱为例
-    // createBubble();
+    createBubble(1,2,3);
 
     // 创建桨叶及电线
     createFans(-distFan, heightWall - axisLengthFan1, -100, -distFan, heightWall - axisLengthFan2, 100);
@@ -457,8 +581,6 @@ function initContent() {
 
     // 创建水
     // createWater();
-
-    createWave();
 }
 // 初始化轨迹球控件
 function initControls() {
