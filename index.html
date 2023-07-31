@@ -10,7 +10,7 @@
 	<script type="module" charset="utf-8" src="./node_modules/"></script>
 	<script type="module" src="./ThreeJs/js/ThreeBSP.js"></script>
 	<script type="module" src="./ThreeJs/js/three.min.js"></script>
-	<script type="module" src="./js/model.js"></script>  <!-- module的加载使用es6语法，需要添加type  -->
+	<script type="module" src="./js/model.js"></script> <!-- module的加载使用es6语法，需要添加type  -->
 	<script type="text/javascript" src="./js/button.js"></script>
 	<script src="./js/prepare.js"></script>
 	<script src="https://unpkg.com/gsap@3.11.1/dist/gsap.min.js"></script>
@@ -25,16 +25,46 @@
 <body class="flex" style="flex-direction: column;">
 	<!-- 顶部标题栏 -->
 	<div id="div_top" class="flex">
-		<div id="title_img">
-			<img src="https://s1.ax1x.com/2023/06/11/pCZnR78.png" alt="小鹿糕" width="50px" height="50px">
+		<div id="title_img" style="margin-left: 50px;">
+			<img src="images/同济大学logo.png" alt="同济大学" width="70px" height="70px">
 		</div>
-		<div id="title" style="margin-left: 20px;">
+		<div id="title" class="flex" style="margin-left: 30px;">
 			<p id="ptitle">
-				城乡动脉——基于时间序列控制的IOT污水处理系统
+				城乡静脉——基于时间序列控制的IoT污水处理系统
 			</p>
 		</div>
 		<div style="margin-left: 100px;">
-			
+			<div class="showTime">当前时间：2020年3月17-0时54分14秒</div>
+			<script>
+				var t = null;
+				t = setTimeout(time, 1000); //開始运行
+				function time() {
+				  clearTimeout(t); //清除定时器
+				  dt = new Date();
+				  var y = dt.getFullYear();
+				  var mt = dt.getMonth() + 1;
+				  var day = dt.getDate();
+				  var h = dt.getHours(); //获取时
+				  var m = dt.getMinutes(); //获取分
+				  var s = dt.getSeconds(); //获取秒
+				  document.querySelector(".showTime").innerHTML =
+					"当前时间：" +
+					y +
+					"年" +
+					mt +
+					"月" +
+					day +
+					"日" +
+					"-" +
+					h +
+					"时" +
+					m +
+					"分" +
+					s +
+					"秒";
+				  t = setTimeout(time, 1000); //设定定时器，循环运行
+				}
+			  </script>
 		</div>
 	</div>
 	<!-- 全局内容块 -->
@@ -45,62 +75,67 @@
 			<div id="div_detect" class="flex flex1">
 				<div id="detect_title" class="flex">
 					<div style="align-self: center;">
-						<p style="font-family: 华文行楷; font-size: 25px;">监测面板</p>
+						<p style="font-family: STZhongsong; font-size: 20px; font-weight: bold;">监测面板</p>
 					</div>
 					<div id="detect_button" class="flex" style="align-self: center;">
-						<div style="align-self: center; margin-left: 2px;margin-right: 5px;"><p>OFF</p></div>
-						<div class="switch flex" style="align-self: center;">
-							<input id="cmn-toggle-4" class="cmn-toggle cmn-toggle-round-flat" type="checkbox">
-							<label for="cmn-toggle-4"></label>
+						<div style="align-self: center; margin-left: 2px;margin-right: 5px;">
+							<p>OFF</p>
 						</div>
-						<div style="align-self: center; margin-left: 5px;margin-right: 5px;"><p>ON</p></div>
+						<div class="switch flex" style="align-self: center;">
+							<input id="cmn-toggle-3" class="cmn-toggle cmn-toggle-round-flat" type="checkbox">
+							<label for="cmn-toggle-3"></label>
+						</div>
+						<div style="align-self: center; margin-left: 5px;margin-right: 5px;">
+							<p>ON</p>
+						</div>
 					</div>
 					<div id="old_data_button" class="flex" style="align-self: center;">
 						<button type="button" style="width: 85px;" onclick="dataDetection()" id="数据监测">数据监测</button>
 					</div>
 					<div id="old_data_button" class="flex" style="align-self: center;">
-						<button type="button" style="width: 85px;">可视化展示</button>
+						<button type="button" style="width: 85px;">数据可视化</button>
 					</div>
 				</div>
-				<div id="div_table" class="flex flex1" style="margin: 15px 10px; padding: 15px 5px; background-color: antiquewhite;">
+				<div id="div_table" class="flex flex1"
+					style="margin: 15px 10px; padding: 1px 1px; background-color: antiquewhite;">
 					<table id="detect_table" style="align-self: center;">
 						<thead>
 							<tr>
 								<th width="400">采集时间</th>
 								<th width="150">温度(°C)</th>
-								<th width="180">DO(mg/L)</th>
-								<th width="120">PH</th>
-								<th width="120">TDS</th>
+								<th width="160">ORP(mV)</th>
+								<th width="100">PH</th>
+								<th width="160">TDS(μS/m)</th>
 							</tr>
 						</thead>
 						<tbody id="fTbody">
 							<tr>
-								<td>2023-7-9</td>
-								<td>35</td>
-								<td>0.2</td>
-								<td>7.5</td>
-								<td>30</td>
+								<td>2023-07-21 13:07:38</td>
+								<td>25.48</td>
+								<td>123.28</td>
+								<td>9.7</td>
+								<td>129.11</td>
 							</tr>
 							<tr>
-								<td>2023-7-9</td>
-								<td>35</td>
-								<td>0.2</td>
-								<td>7.5</td>
-								<td>30</td>
+								<td>2023-07-21 13:07:41</td>
+								<td>25.52</td>
+								<td>123.78</td>
+								<td>10.2</td>
+								<td>128.98</td>
 							</tr>
 							<tr>
-								<td>2023-7-9</td>
-								<td>35</td>
-								<td>0.2</td>
-								<td>7.5</td>
-								<td>30</td>
+								<td>2023-07-21 13:07:44</td>
+								<td>26.28</td>
+								<td>123.54</td>
+								<td>9.9</td>
+								<td>128.76</td>
 							</tr>
 							<tr>
-								<td>2023-7-9</td>
-								<td>35</td>
-								<td>0.2</td>
-								<td>7.5</td>
-								<td>30</td>
+								<td>2023-07-21 13:07:47</td>
+								<td>24.53</td>
+								<td>123.23</td>
+								<td>10.1</td>
+								<td>129.68</td>
 							</tr>
 						</tbody>
 					</table>
@@ -111,30 +146,34 @@
 		<div id="div_control" class="flex flex1">
 			<!-- 控制标题 -->
 			<div id="control_title" class="flex">
-				<p style="font-family: 华文行楷; font-size: 25px;">控制面板</p>
-				<div style="align-self: center; margin-left: 20px;margin-right: 5px;"><p>手动</p></div>
+				<p style="font-family: STZhongsong; font-size: 25px; font-weight: bold;">控制面板</p>
+				<div style="align-self: center; margin-left: 20px;margin-right: 5px;">
+					<p>手动</p>
+				</div>
 				<div class="switch flex" style="align-self: center;">
 					<input id="cmn-toggle-4" class="cmn-toggle cmn-toggle-round-flat" type="checkbox">
 					<label for="cmn-toggle-4"></label>
 				</div>
-				<div style="align-self: center; margin-left: 5px;"><p>自动</p></div>
-				<input type="reset" id="Reset" value="Reset" style="height: 30px;align-self: center;margin-left: 20px;">
+				<div style="align-self: center; margin-left: 5px;">
+					<p>自动</p>
+				</div>
+				<input type="reset" id="Reset" value="Reset" style="height: 30px;align-self: center;margin-left: 20px;"
+					onclick="controlReset()">
 			</div>
 			<!-- 控制面板 -->
 			<div id="div_control_pannel" class="flex flex1">
 				<!-- 六个开关量gpio -->
+
 				<div id="div_gpio" class="flex">
-					<div class="gpio_block" class="flex">
+					<div class="gpio_block fan_bg" class="flex">
 						<div style="text-align: center;">
 							<img src="svg/桨叶图标.svg" style="width: 70px;">
 						</div>
 						<div style="text-align: center;">
-							<!-- <button class="targetbuttons" style="margin-left: 1%; top: 93%;" id="桨叶2">桨叶2</button> -->
 							<button id="桨叶1" onclick="gpioControlFan1()">桨叶1</button>
-							<!-- <p style="font-size: 15px;">桨叶1</p> -->
 						</div>
 					</div>
-					<div class="gpio_block" class="flex">
+					<div class="gpio_block stone_bg" class="flex">
 						<div style="text-align: center; margin: 7px; margin-bottom: 3px;">
 							<img src="svg/曝气石图标.svg" style="width: 60px;">
 						</div>
@@ -142,7 +181,7 @@
 							<button id="曝气石组1" onclick="gpioControlStoneGroup1()">曝气石组1</button>
 						</div>
 					</div>
-					<div class="gpio_block" class="flex">
+					<div class="gpio_block stone_bg" class="flex">
 						<div style="text-align: center; margin: 7px; margin-bottom: 3px;">
 							<img src="svg/曝气石图标.svg" style="width: 60px;">
 						</div>
@@ -150,7 +189,7 @@
 							<button id="曝气石组2" onclick="gpioControlStoneGroup2()">曝气石组2</button>
 						</div>
 					</div>
-					<div class="gpio_block" class="flex">
+					<div class="gpio_block fan_bg" class="flex">
 						<div style="text-align: center;">
 							<div style="text-align: center;">
 								<img src="svg/桨叶图标.svg" style="width: 70px;">
@@ -160,7 +199,7 @@
 							</div>
 						</div>
 					</div>
-					<div class="gpio_block" class="flex">
+					<div class="gpio_block stone_bg" class="flex">
 						<div style="text-align: center; margin: 7px; margin-bottom: 3px;">
 							<img src="svg/曝气石图标.svg" style="width: 60px;">
 						</div>
@@ -168,7 +207,7 @@
 							<button id="曝气石组3" onclick="gpioControlStoneGroup3()">曝气石组3</button>
 						</div>
 					</div>
-					<div class="gpio_block" class="flex">
+					<div class="gpio_block stone_bg" class="flex">
 						<div style="text-align: center; margin: 7px; margin-bottom: 3px;">
 							<img src="svg/曝气石图标.svg" style="width: 60px;">
 						</div>
@@ -176,61 +215,93 @@
 							<button id="曝气石组4" onclick="gpioControlStoneGroup4()">曝气石组4</button>
 						</div>
 					</div>
+
+					<div class="gpio_block pump_bg" class="flex">
+						<div style="text-align: center; margin: 7px; margin-bottom: 3px;">
+							<img src="svg/回流泵图标.svg" style="width: 60px;">
+						</div>
+						<div style="text-align: center;">
+							<button id="回流泵1" onclick="gpioControlPump1()">回流泵1</button>
+						</div>
+					</div>
+					<div class="gpio_block pump_bg" class="flex">
+						<div style="text-align: center; margin: 7px; margin-bottom: 3px;">
+							<img src="svg/回流泵图标.svg" style="width: 60px;">
+						</div>
+						<div style="text-align: center;">
+							<button id="回流泵2" onclick="gpioControlPump2()">回流泵2</button>
+						</div>
+					</div>
+					<div class="gpio_block pump_bg" class="flex">
+						<div style="text-align: center; margin: 7px; margin-bottom: 3px;">
+							<img src="svg/回流泵图标.svg" style="width: 60px;">
+						</div>
+						<div style="text-align: center;">
+							<button id="回流泵3" onclick="gpioControlPump3()">回流泵3</button>
+						</div>
+					</div>
+
 				</div>
 				<!-- 六个模拟量pwm -->
 				<div id="div_pwm" class="flex">
-					<div class="pwm_block" id="曝气盘1">
+					<div class="pwm_block plate_bg" id="曝气盘1">
 						<div style="text-align: center; margin: 10px;">
-							<img src="svg/曝气盘图标.svg" style="width: 75px;">
+							<img src="svg/曝气盘图标.svg" style="width: 60px;">
 						</div>
 						<div style="text-align: center;">
-							<p style="font-size: 15px;">曝气盘1</p>
-							<input id="曝气盘1拉条" type="range" min="0" max="100" step="10" value="0" onchange="pwmControlPlate1()"/>
+							<p style="font-size: 16px; font-family: STZhongsong;">曝气盘1</p>
+							<input id="曝气盘1拉条" type="range" min="0" max="100" step="10" value="0" style="width: 95px;"
+								onchange="pwmControlPlate1()" />
 						</div>
 					</div>
-					<div class="pwm_block" id="曝气盘2">
+					<div class="pwm_block plate_bg" id="曝气盘2">
 						<div style="text-align: center; margin: 10px;">
-							<img src="svg/曝气盘图标.svg" style="width: 75px;">
+							<img src="svg/曝气盘图标.svg" style="width: 60px;">
 						</div>
 						<div style="text-align: center;">
-							<p style="font-size: 15px;">曝气盘2</p>
-							<input id="曝气盘2拉条" type="range" min="0" max="100" step="10" value="0" onchange="pwmControlPlate2()"/>
+							<p style="font-size: 16px; font-family: STZhongsong;">曝气盘2</p>
+							<input id="曝气盘2拉条" type="range" min="0" max="100" step="10" value="0" style="width: 95px;"
+								onchange="pwmControlPlate2()" />
 						</div>
 					</div>
-					<div class="pwm_block">
+					<div class="pwm_block plate_bg">
 						<div style="text-align: center; margin: 10px;">
-							<img src="svg/曝气盘图标.svg" style="width: 75px;">
+							<img src="svg/曝气盘图标.svg" style="width: 60px;">
 						</div>
 						<div style="text-align: center;">
-							<p style="font-size: 15px;">曝气盘3</p>
-							<input id="曝气盘3拉条" type="range" min="0" max="100" step="10" value="0" onchange="pwmControlPlate3()"/>
+							<p style="font-size: 16px; font-family: STZhongsong;">曝气盘3</p>
+							<input id="曝气盘3拉条" type="range" min="0" max="100" step="10" value="0" style="width: 95px;"
+								onchange="pwmControlPlate3()" />
 						</div>
 					</div>
-					<div class="pwm_block">
+					<div class="pwm_block plate_bg">
 						<div style="text-align: center; margin: 10px;">
-							<img src="svg/曝气盘图标.svg" style="width: 75px;">
+							<img src="svg/曝气盘图标.svg" style="width: 60px;">
 						</div>
 						<div style="text-align: center;">
-							<p style="font-size: 15px;">曝气盘4</p>
-							<input id="曝气盘4拉条" type="range" min="0" max="100" step="10" value="0" onchange="pwmControlPlate4()"/>
+							<p style="font-size: 16px; font-family: STZhongsong;">曝气盘4</p>
+							<input id="曝气盘4拉条" type="range" min="0" max="100" step="10" value="0" style="width: 95px;"
+								onchange="pwmControlPlate4()" />
 						</div>
 					</div>
-					<div class="pwm_block">
+					<div class="pwm_block plate_bg">
 						<div style="text-align: center; margin: 10px;">
-							<img src="svg/曝气盘图标.svg" style="width: 75px;">
+							<img src="svg/曝气盘图标.svg" style="width: 60px;">
 						</div>
 						<div style="text-align: center;">
-							<p style="font-size: 15px;">曝气盘5</p>
-							<input id="曝气盘5拉条" type="range" min="0" max="100" step="10" value="0" onchange="pwmControlPlate5()"/>
+							<p style="font-size: 16px; font-family: STZhongsong;">曝气盘5</p>
+							<input id="曝气盘5拉条" type="range" min="0" max="100" step="10" value="0" style="width: 95px;"
+								onchange="pwmControlPlate5()" />
 						</div>
 					</div>
-					<div class="pwm_block">
+					<div class="pwm_block plate_bg">
 						<div style="text-align: center; margin: 10px;">
-							<img src="svg/曝气盘图标.svg" style="width: 75px;">
+							<img src="svg/曝气盘图标.svg" style="width: 60px;">
 						</div>
 						<div style="text-align: center;">
-							<p style="font-size: 15px;">曝气盘6</p>
-							<input id="曝气盘6拉条" type="range" min="0" max="100" step="10" value="0" onchange="pwmControlPlate6()"/>
+							<p style="font-size: 16px; font-family: STZhongsong; align-self: center;">曝气盘6</p>
+							<input id="曝气盘6拉条" type="range" min="0" max="100" step="10" value="0" style="width: 95px;"
+								onchange="pwmControlPlate6()" />
 						</div>
 					</div>
 				</div>

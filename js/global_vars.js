@@ -1,7 +1,8 @@
 // 全局变量
 // var baseUrl='http://192.168.79.202:5000/'
 // var baseUrl='http://192.168.43.117:5000/'
-var baseUrl='http://192.168.70.178:5000/'
+// var baseUrl='http://192.168.70.178:5000/'
+var baseUrl='http://192.168.43.183:5000/'
 
 var scene, camera, spotLight, stats, renderer, controls, fan1, fan2;
 var vs, fs;
@@ -51,10 +52,12 @@ var ssg1=0;
 var ssg2=0;
 var ssg3=0;
 var ssg4=0;
+var sp1=0;
+var sp2=0;
+var sp3=0;
 var sb1=0;
 var sb2=0;
 var sb3=0;
 var sb4=0;
 var sb5=0;
 var sb6=0;
-
