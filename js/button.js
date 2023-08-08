@@ -540,24 +540,24 @@ $(document).ready(function () {
     url: baseUrl, //首先请求一次后台，再进行其他操作
     dataType: "json", // 预期返回的数据类型，如果是json格式，在接收到返回时会自动封装成json对象
     type: "get", // 请求方式
-    async: true, // 是否异步请求
+    async: false, // 是否异步请求
     success: function (data) {
       console.log("成功！");
     },
     error: function (arg1) {
     },
   });
-  $.ajax({
-    url: baseUrl+'start_get', //首先请求一次后台，再进行其他操作
-    dataType: "json", // 预期返回的数据类型，如果是json格式，在接收到返回时会自动封装成json对象
-    type: "get", // 请求方式
-    async: true, // 是否异步请求
-    success: function (data) {
-      console.log("成功！");
-    },
-    error: function (arg1) {
-    },
-  });
+  // $.ajax({
+  //   url: baseUrl+'start_get', //首先请求一次后台，再进行其他操作
+  //   dataType: "json", // 预期返回的数据类型，如果是json格式，在接收到返回时会自动封装成json对象
+  //   type: "get", // 请求方式
+  //   async: false, // 是否异步请求
+  //   success: function (data) {
+  //     console.log("成功！");
+  //   },
+  //   error: function (arg1) {
+  //   },
+  // });
   $(function () {
     let text = $("#fTbody:first");
     let status = $("#在线监测");
