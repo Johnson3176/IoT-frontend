@@ -13,6 +13,7 @@
 	<script type="module" src="./js/model.js"></script> <!-- module的加载使用es6语法，需要添加type  -->
 	<script type="text/javascript" src="./js/button.js"></script>
 	<script src="./js/prepare.js"></script>
+	<script src="./js/modeSetting.js"></script>
 	<script src="https://unpkg.com/gsap@3.11.1/dist/gsap.min.js"></script>
 	<script src="https://unpkg.com/lil-gui@0.17.0/dist/lil-gui.umd.min.js"></script>
 	<script src="https://unpkg.com/ccapture.js@1.1.0/build/CCapture.all.min.js"></script>
@@ -147,23 +148,19 @@
 			<!-- 控制标题 -->
 			<div id="control_title" class="flex">
 				<p style="font-family: STZhongsong; font-size: 25px; font-weight: bold;">控制面板</p>
-				<div style="align-self: center; margin-left: 20px;margin-right: 5px;">
-					<p>手动</p>
-				</div>
-				<div class="switch flex" style="align-self: center;">
-					<input id="cmn-toggle-4" class="cmn-toggle cmn-toggle-round-flat" type="checkbox">
-					<label for="cmn-toggle-4"></label>
-				</div>
-				<div style="align-self: center; margin-left: 5px;">
-					<p>自动</p>
-				</div>
 				<input type="reset" id="Reset" value="Reset" style="height: 30px;align-self: center;margin-left: 20px;"
 					onclick="controlReset()">
+			</div>
+			<div id="control_mode" class="flex">
+				<ul class="mode_menu">
+					<li><a id="mode1" class="active">手动模式</a></li>
+					<li><a id="mode2">定时模式</a></li>
+					<li><a id="mode3">智能模式</a></li>
+				</ul>
 			</div>
 			<!-- 控制面板 -->
 			<div id="div_control_pannel" class="flex flex1">
 				<!-- 六个开关量gpio -->
-
 				<div id="div_gpio" class="flex">
 					<div class="gpio_block fan_bg" class="flex">
 						<div style="text-align: center;">

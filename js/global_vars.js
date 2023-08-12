@@ -1,9 +1,7 @@
 // 全局变量
-// var baseUrl='http://192.168.79.202:5000/'
-var baseUrl='http://192.168.43.117:5000/'
-// var baseUrl='http://192.168.70.178:5000/'
-// var baseUrl='http://192.168.43.183:5000/'
-
+// var baseUrl='http://192.168.130.219:5000/'
+var baseUrl='http://192.168.130.178:5000/'
+// var baseUrl='http://127.0.0.1:5000/'
 var scene, camera, spotLight, stats, renderer, controls, fan1, fan2;
 var vs, fs;
 
@@ -18,17 +16,25 @@ var lengthLeftWall = 800, lengthMiddleWall = 400, lengthRightWall = 150;
 var heightWall = 600, widthWall = 400;
 var thicknessOuter = 10, thicknessInner = 5; 
 var heightDam = 450, distDam = 700;
-var distBioReactor = 600, distPartWall = 500, distLeftMiddle = 100;
+var distBioReactor = 600, distPartWall = 500, distLeftMiddle = 200;
 
 /***** 曝气石参数 *****/
 var stoneRadius = 9, stoneHeight = 50, stone2floor = 180;
 
 /***** 风扇参数 *****/
 var distFan = 600
-var axisLengthFan1 = 250, axisLengthFan2 = 300;
+var axisLengthFan1 = 400, axisLengthFan2 = 250;
 
 var fan_base_v=0.5;
 
+
+// 控制界面
+
+/* 控制模式导航栏 */ 
+var mode_id="mode1";
+/* 发送数据状态 */
+var sdata = "FFFFFFFFF000000";
+/* three.js模型控制变量 */
 var stone1;
 var stone2;
 var stone3;

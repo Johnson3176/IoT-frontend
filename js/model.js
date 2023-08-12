@@ -13,7 +13,7 @@ import * as kokomi from "kokomi.js";
 // 1.初始化场景
 function initScene() {
     scene = new THREE.Scene();  // 创建场景对象
-    scene.background = new THREE.Color(0x8cc7de);  // 设置场景背景色为蓝色
+    scene.background = new THREE.Color(0x99AAD0);  // 设置场景背景色为蓝色
     scene.fog = new THREE.Fog(scene.background, 3000, 5000);  // 设置烟雾效果
 }
 
@@ -62,7 +62,7 @@ function createFloor() {
         var floorMaterial = new THREE.MeshBasicMaterial({ map: texture, side: THREE.DoubleSide });
         var floor = new THREE.Mesh(floorGeometry, floorMaterial);
         floor.position.y = -20;
-        floor.position.x = -200;
+        floor.position.x = -100;
         floor.rotation.x = Math.PI / 2;
 
         floor.name = "地面";
@@ -81,6 +81,34 @@ function createCubeWall(width, height, depth, angle, material, x, y, z, name) {
     cube.position.y = y;
     cube.position.z = z;
     cube.rotation.y += angle * Math.PI;  // -逆时针旋转,+顺时针
+    cube.name = name;
+    scene.add(cube);
+}
+
+function createCubeWall2(width, height, depth, angle, material, x, y, z, name) {
+    // 创建墙
+    var cubeGeometry = new THREE.BoxGeometry(width, height, depth);
+    // cubeGeometry.opacity=1.0;
+    cubeGeometry.transparent = true;
+    var cube = new THREE.Mesh(cubeGeometry, material);
+    cube.position.x = x;
+    cube.position.y = y;
+    cube.position.z = z;
+    cube.rotation.z += angle * Math.PI;  // -逆时针旋转,+顺时针
+    cube.name = name;
+    scene.add(cube);
+}
+
+function createCubeWall3(width, height, depth, angle, material, x, y, z, name) {
+    // 创建墙
+    var cubeGeometry = new THREE.BoxGeometry(width, height, depth);
+    // cubeGeometry.opacity=1.0;
+    cubeGeometry.transparent = true;
+    var cube = new THREE.Mesh(cubeGeometry, material);
+    cube.position.x = x;
+    cube.position.y = y;
+    cube.position.z = z;
+    cube.rotation.x += angle * Math.PI;  // -逆时针旋转,+顺时针
     cube.name = name;
     scene.add(cube);
 }
@@ -489,14 +517,61 @@ function createRefluxBump() {
     // 0x6aebf9
     // #908E91
     createCubeWall(99, 78, 78, 0, new THREE.MeshPhongMaterial({ color: 0x908e91 }), -440, 39, -130);
-    createCubeWall(99, 78, 78, 0.5, new THREE.MeshPhongMaterial({ color: 0x908e91 }), -445, 39, 0);
+    createCubeWall(99, 78, 78, 0, new THREE.MeshPhongMaterial({ color: 0x908e91 }), -445, 39, 0);
     createCubeWall(99, 78, 78, 0, new THREE.MeshPhongMaterial({ color: 0x908e91 }), -440, 39, 130);
 }
 
-function createToptube() {
-    createCubeWall(40, 10, 1100, 0.5, new THREE.MeshPhongMaterial({ color: 0xafc0ca, opacity: 0.7, transparent: true }), -130, 560, -100);
+function createTopFrame() {
+    createCubeWall(70, 10, 300, 0.5, new THREE.MeshPhongMaterial({ color: 0xafc0ca, opacity: 0.7, transparent: true }), -650, 600, -100);
     // createCubeWall(25, 10, 1100, 0.5, new THREE.MeshPhongMaterial({ color: 0xfffe9f }), -200, 560, 100);
-    createCubeWall(40, 10, 1100, 0.5, new THREE.MeshPhongMaterial({ color: 0xafc0ca, opacity: 0.7, transparent: true }), -130, 560, 100);
+    createCubeWall(70, 10, 300, 0.5, new THREE.MeshPhongMaterial({ color: 0xafc0ca, opacity: 0.7, transparent: true }), -650, 600, 100);
+}
+
+function createTube(innerRadius, outRadius, height, angle, material, x, y, z, name){
+     
+    // 创建墙
+    // var cubeGeometry = new THREE.BoxGeometry(width, height, depth);
+    // // cubeGeometry.opacity=1.0;
+    // cubeGeometry.transparent = true;
+    // var cube = new THREE.Mesh(cubeGeometry, material);
+    
+    // Cylinder constructor parameters:  
+    // radiusAtTop, radiusAtBottom, height, segmentsAroundRadius, segmentsAlongHeight
+
+    var smallCylinderGeom = new THREE.CylinderGeometry( innerRadius, innerRadius, height, 20,4);
+    var largeCylinderGeom = new THREE.CylinderGeometry( outRadius, outRadius, height, 20,4);
+
+    var smallCylinderBSP = new ThreeBSP(smallCylinderGeom);
+    var largeCylinderBSP = new ThreeBSP(largeCylinderGeom);
+    var intersectionBSP = largeCylinderBSP.subtract(smallCylinderBSP);      
+
+    var hollowCylinder = intersectionBSP.toMesh( material );
+    hollowCylinder.position.x = x;
+    hollowCylinder.position.y = y;
+    hollowCylinder.position.z = z;
+    hollowCylinder.rotation.z += angle * Math.PI;  // -逆时针旋转,+顺时针
+    hollowCylinder.name = name;
+    scene.add( hollowCylinder );
+
+}
+
+
+function createValve(){
+
+}
+
+function createSedimentBoard(){
+    let opacity_set=0.8;
+    createCubeWall2(8, 200, 400, 0.25, new THREE.MeshPhongMaterial({ color: 0xbabaaa, opacity: opacity_set, transparent: true }), 270, 80, 0, "下层沉淀板");
+    createCubeWall2(8, 200, 400, -0.25, new THREE.MeshPhongMaterial({ color: 0xbabaaa, opacity: opacity_set, transparent: true }), 530, 80, 0, "下层沉淀板");
+    createCubeWall3(400, 150, 4, 0.167, new THREE.MeshPhongMaterial({ color: 0xaabaca, opacity: opacity_set, transparent: true }), 400, 350, 15+150, "上层沉淀板");
+    createCubeWall3(400, 150, 4, 0.167, new THREE.MeshPhongMaterial({ color: 0xaabaca, opacity: opacity_set, transparent: true }), 400, 350, 15+100, "上层沉淀板");
+    createCubeWall3(400, 150, 4, 0.167, new THREE.MeshPhongMaterial({ color: 0xaabaca, opacity: opacity_set, transparent: true }), 400, 350, 15+50, "上层沉淀板");
+    createCubeWall3(400, 150, 4, 0.167, new THREE.MeshPhongMaterial({ color: 0xaabaca, opacity: opacity_set, transparent: true }), 400, 350, 15+0, "上层沉淀板");
+    createCubeWall3(400, 150, 4, 0.167, new THREE.MeshPhongMaterial({ color: 0xaabaca, opacity: opacity_set, transparent: true }), 400, 350, 15+-50, "上层沉淀板");
+    createCubeWall3(400, 150, 4, 0.167, new THREE.MeshPhongMaterial({ color: 0xaabaca, opacity: opacity_set, transparent: true }), 400, 350, 15+-100, "上层沉淀板");
+    createCubeWall3(400, 150, 4, 0.167, new THREE.MeshPhongMaterial({ color: 0xaabaca, opacity: opacity_set, transparent: true }), 400, 350, 15+-150, "上层沉淀板");
+    createCubeWall3(400, 70, 4, 0.167, new THREE.MeshPhongMaterial({ color: 0xaabaca, opacity: opacity_set, transparent: true }), 400, 380, 15+-200, "上层沉淀板");
 }
 
 function createFans(x1, y1, z1, x2, y2, z2) {
@@ -530,16 +605,16 @@ function createFans(x1, y1, z1, x2, y2, z2) {
 function initContent() {
     createFloor();
     // 创建污水处理容器
-    var opacity_set = 0.7
+    var opacity_set = 0.9
     createCubeWall(thicknessOuter, heightWall, lengthLeftWall, 0.5, new THREE.MeshPhongMaterial({ color: 0xfafafa, opacity: opacity_set, transparent: true }), ref_y - lengthLeftWall / 2, heightWall / 2, widthWall / 2, "进水曝气前墙面");
-    createCubeWall(lengthLeftWall, thicknessOuter, widthWall, 0, new THREE.MeshPhongMaterial({ color: 0xfafafa, opacity: opacity_set, transparent: true }), ref_y - lengthLeftWall / 2, -thicknessOuter/2, 0, "进水曝气底面");
+    createCubeWall(lengthLeftWall+80, thicknessOuter, widthWall+80, 0, new THREE.MeshPhongMaterial({ color: 0xfafafa, opacity: opacity_set, transparent: true }), ref_y - lengthLeftWall / 2, -thicknessOuter/2, 0, "进水曝气底面");
     createCubeWall(thicknessOuter, heightWall, widthWall, 0, new THREE.MeshPhongMaterial({ color: 0xfafafa, opacity: opacity_set, transparent: true }), ref_y - lengthLeftWall, heightWall / 2, 0, "进水曝气左墙面");
     createCubeWall(thicknessInner, heightDam, widthWall, 1, new THREE.MeshPhongMaterial({ color: 0xfafafa, opacity: opacity_set, transparent: true }), ref_y - distDam, heightDam / 2, 0, "左挡板");
     createCubeWall(thicknessInner, heightWall, widthWall, 1, new THREE.MeshPhongMaterial({ color: 0xfafafa, opacity: opacity_set, transparent: true }), ref_y - distPartWall, heightWall / 2, 0, "左隔层");
     createCubeWall(thicknessOuter, heightWall, widthWall, 1, new THREE.MeshPhongMaterial({ color: 0xfafafa, opacity: opacity_set, transparent: true }), ref_y, heightWall / 2, 0, "进水曝气右墙面");
     createCubeWall(thicknessOuter, heightWall, lengthLeftWall, 1.5, new THREE.MeshPhongMaterial({ color: 0xfafafa, opacity: opacity_set, transparent: true }), ref_y - lengthLeftWall / 2, heightWall / 2, -widthWall / 2, "进水曝气后墙面");
     createCubeWall(thicknessOuter, heightWall, lengthMiddleWall, 0.5, new THREE.MeshPhongMaterial({ color: 0xfafafa, opacity: opacity_set, transparent: true }), ref_y + distLeftMiddle + lengthMiddleWall / 2, heightWall / 2, widthWall / 2, "出水前墙面");
-    createCubeWall(lengthMiddleWall, thicknessOuter, widthWall, 0, new THREE.MeshPhongMaterial({ color: 0xfafafa, opacity: opacity_set, transparent: true }), ref_y + distLeftMiddle + lengthMiddleWall / 2, -thicknessOuter/2, 0, "出水底面");
+    createCubeWall(lengthMiddleWall+80, thicknessOuter, widthWall+80, 0, new THREE.MeshPhongMaterial({ color: 0xfafafa, opacity: opacity_set, transparent: true }), ref_y + distLeftMiddle + lengthMiddleWall / 2, -thicknessOuter/2, 0, "出水底面");
     createCubeWall(thicknessOuter, heightWall, widthWall, 1, new THREE.MeshPhongMaterial({ color: 0xfafafa, opacity: opacity_set, transparent: true }), ref_y + distLeftMiddle, heightWall / 2, 0, "出水左墙面");
     createCubeWall(thicknessOuter, heightWall, widthWall, 1, new THREE.MeshPhongMaterial({ color: 0xfafafa, opacity: opacity_set, transparent: true }), ref_y + distLeftMiddle + lengthMiddleWall, heightWall / 2, 0, "出水右墙面");
     createCubeWall(thicknessOuter, heightWall, lengthMiddleWall, 0.5, new THREE.MeshPhongMaterial({ color: 0xfafafa, opacity: opacity_set, transparent: true }), ref_y + distLeftMiddle + lengthMiddleWall / 2, heightWall / 2, -widthWall / 2, "出水后墙面");
@@ -568,12 +643,31 @@ function initContent() {
     // 创建气泡效果，首先以一个圆柱为例
     createBubble(1,2,3);
 
-    // 创建桨叶及电线
+    // 创建桨叶
     createFans(-distFan, heightWall - axisLengthFan1, -100, -distFan, heightWall - axisLengthFan2, 100);
-
-    // 创建顶部管道
-    createToptube();
-
+    createTube(1,15,30,0,new THREE.MeshPhongMaterial({ color: 0xafafaf, opacity: 0.9, transparent: true }),-600,620,-100);  // 圆柱模拟电机
+    createTube(1,15,30,0,new THREE.MeshPhongMaterial({ color: 0xafafaf, opacity: 0.9, transparent: true }),-600,620,100);   // 圆柱模拟电机
+    createTube(1,3,400,0,new THREE.MeshPhongMaterial({ color: 0xfaeada, opacity: 0.9, transparent: true }),-600,400,-100);  // 电机杆
+    createTube(1,3,250,0,new THREE.MeshPhongMaterial({ color: 0xfaeada, opacity: 0.9, transparent: true }),-600,475,100);   // 电机杆
+    // 创建进水区顶部电机承载结构
+    createTopFrame();
+    // 创建气管管道
+    createTube(16,20,500,0.5,new THREE.MeshPhongMaterial({ color: 0xfafafa, opacity: 0.9, transparent: true }),-250,620,-200);
+    // 创建线路管道
+    createTube(25,30,550,0.5,new THREE.MeshPhongMaterial({ color: 0xfafafa, opacity: 0.9, transparent: true }),-250,560,0);
+    // 创建沉淀区进水管道
+    createTube(20,25,400,0.5,new THREE.MeshPhongMaterial({ color: 0xfafafa, opacity: 0.9, transparent: true }),400,500,0);
+    // 创建沉淀区溢流管道
+    createTube(20,25,400,0.5,new THREE.MeshPhongMaterial({ color: 0xfafafa, opacity: 0.9, transparent: true }),400,200,0);
+    // 创建曝气至沉淀管道
+    createTube(20,25,120,0.5,new THREE.MeshPhongMaterial({ color: 0x707E7B, opacity: 0.9, transparent: true }),65,480,0);
+    createTube(20,25,320,0,new THREE.MeshPhongMaterial({ color: 0x707E7B, opacity: 0.9, transparent: true }),100,340,0);
+    createTube(20,25,80,0.5,new THREE.MeshPhongMaterial({ color: 0x707E7B, opacity: 0.9, transparent: true }),150,200,0);
+    
+    // 创建阀门
+    createValve();
+    // 创建沉淀区沉淀板
+    createSedimentBoard();
     // 创建气泵
     createRefluxBump();
 
@@ -623,34 +717,34 @@ function animate() {
 
     if (ssg1){
         stone1.material.color.set(0x55ff55);
-        stone2.material.color.set(0x55ff55);
+        stone5.material.color.set(0x55ff55);
     }
     else{
         stone1.material.color.set(0x778899);
-        stone2.material.color.set(0x778899);
+        stone5.material.color.set(0x778899);
     }
     if (ssg2){
-        stone3.material.color.set(0x55ff55);
-        stone4.material.color.set(0x55ff55);
-    }
-    else{
-        stone3.material.color.set(0x778899);
-        stone4.material.color.set(0x778899);
-    }
-    if (ssg3){
-        stone5.material.color.set(0x55ff55);
+        stone2.material.color.set(0x55ff55);
         stone6.material.color.set(0x55ff55);
     }
     else{
-        stone5.material.color.set(0x778899);
+        stone2.material.color.set(0x778899);
         stone6.material.color.set(0x778899);
     }
-    if (ssg4){
+    if (ssg3){
+        stone3.material.color.set(0x55ff55);
         stone7.material.color.set(0x55ff55);
+    }
+    else{
+        stone3.material.color.set(0x778899);
+        stone7.material.color.set(0x778899);
+    }
+    if (ssg4){
+        stone4.material.color.set(0x55ff55);
         stone8.material.color.set(0x55ff55);
     }
     else{
-        stone7.material.color.set(0x778899);
+        stone4.material.color.set(0x778899);
         stone8.material.color.set(0x778899);
     }
 
